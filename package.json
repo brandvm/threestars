@@ -1,5 +1,6 @@
 {
-  "name": "@finsweet/developer-starter",
+"name": "threestars",
+"packageManager": "pnpm@11.25.0",
   "version": "0.0.0",
   "description": "Developer starter template for Finsweet projects.",
   "homepage": "https://github.com/finsweet/developer-starter#readme",
