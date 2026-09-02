@@ -11,6 +11,21 @@
       our own base layer that Designer classes should be free to override.
    3. Never wrap overrides in @layer. Webflow's CSS is unlayered, and
       unlayered always beats layered regardless of order.
+   4. Section order IS the tiebreaker — most of this file sits at 0-1-0
+      (one class, or one attribute selector), so when two rules collide
+      the later one wins. Sections run broad to narrow:
+
+        01 TOKENS               variables only, no output
+        02 BASE                 our reset and element defaults
+        03 WEBFLOW NEUTRALIZERS undo what Webflow's normalize invents
+        04 DOCUMENT STATE       runtime classes on <html>, set by JS
+        05 COMPONENTS & MOTION  named things: .link-underline, marquees
+        06 UTILITIES            single-purpose, must beat components
+        07 ACCESSIBILITY        focus rings and reduced-motion trumps
+        08 EDITOR & DEV SUPPORTS canvas-only escape hatches
+
+      Add rules to the section they belong to, not to the end of the
+      file — appending is how a utility silently stops winning.
    ============================================================ */
 
 /* ============================================================
@@ -329,7 +344,154 @@ select.w-select {
 }
 
 /* ============================================================
-   04. UTILITIES
+   04. DOCUMENT STATE
+   ============================================================ */
+
+/* Runtime classes on <html>, set outside this sheet: the head bootstrap
+   in loader.html adds .is-loading before first paint, src/index.ts drops
+   it once the bundle boots, and Lenis owns the rest. Grouped here so the
+   whole boot handshake reads in one place. */
+
+html.is-loading,
+html.is-loading body {
+  overflow: hidden;
+  height: 100%;
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Designer leaves the preloader hidden so you can work under it; force it
+   back on at runtime. The canvas opt-out lives in the last section. */
+.preloader {
+  display: flex !important;
+}
+
+/* ============================================================
+   05. COMPONENTS & MOTION
+   ============================================================ */
+
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: "";
+  position: absolute;
+  top: var(--underline-top);
+  left: 0%;
+  height: var(--underline-height);
+  width: 0%;
+  background: currentColor;
+  transition: width var(--dur-bbs) var(--ease-bbs);
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+.link-underline:not(:hover)::after {
+  left: auto;
+  right: 0%;
+  width: 0%;
+}
+
+/* Real text-decoration, not a pseudo-element: this is the variant for
+   links inside a paragraph, and an absolutely-positioned ::after cannot
+   follow one across a line break — it would draw a single bar over the
+   whole inline box. Decoration wraps per line fragment for free, and
+   inherits the skip-ink / thickness / offset set globally in 02 BASE.
+
+   The 0-1-0 class beats `a { text-decoration: none }` in 02 BASE.
+   First color declaration is the fallback where color-mix is missing:
+   a full-strength underline rather than none at all. */
+.inline-link-underline {
+  text-decoration-line: underline;
+  text-decoration-color: currentColor;
+  text-decoration-color: color-mix(
+    in srgb,
+    currentColor calc(var(--inline-underline-opacity) * 100%),
+    transparent
+  );
+  transition: text-decoration-color var(--dur-bbs) var(--ease-bbs);
+}
+
+.inline-link-underline:hover {
+  text-decoration-color: currentColor;
+}
+
+.image-w img {
+  transition: transform var(--dur-bbs) var(--ease-bbs);
+}
+
+.image-w:hover img {
+  transform: scale(var(--image-zoom-scale));
+}
+
+/* Marquees — the JS duplicates the track, the CSS just runs it */
+@keyframes loopX {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes loopY {
+  from {
+    transform: translateY(0%);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+.loop-animate-x {
+  animation: loopX var(--loop-x-duration) linear infinite;
+  will-change: transform;
+}
+
+.loop-animate-y {
+  animation: loopY var(--loop-y-duration) linear infinite;
+  will-change: transform;
+}
+
+.loop-animate-x.reverse,
+.loop-animate-y.reverse {
+  animation-direction: reverse;
+}
+
+@keyframes svgDash {
+  to {
+    stroke-dashoffset: var(--svg-dash-offset);
+  }
+}
+
+.svg-animate-line {
+  stroke-dasharray: 10 10 !important;
+  animation: svgDash var(--svg-dash-duration) linear infinite;
+}
+
+.svg-animate-line.reverse {
+  animation-direction: reverse;
+}
+
+/* ============================================================
+   06. UTILITIES
    ============================================================ */
 
 /* Anchor offset for the fixed header */
@@ -474,113 +636,7 @@ select.w-select {
 }
 
 /* ============================================================
-   05. MOTION
-   ============================================================ */
-
-.link-underline {
-  position: relative;
-}
-
-.link-underline::after {
-  content: "";
-  position: absolute;
-  top: var(--underline-top);
-  left: 0%;
-  height: var(--underline-height);
-  width: 0%;
-  background: currentColor;
-  transition: width var(--dur-bbs) var(--ease-bbs);
-}
-
-.link-underline:hover::after {
-  width: 100%;
-}
-
-.link-underline:not(:hover)::after {
-  left: auto;
-  right: 0%;
-  width: 0%;
-}
-
-.inline-link-underline {
-  position: relative;
-}
-
-.inline-link-underline::after {
-  content: "";
-  position: absolute;
-  top: var(--underline-top);
-  left: 0%;
-  height: var(--underline-height);
-  width: 100%;
-  background: currentColor;
-  opacity: var(--inline-underline-opacity);
-  transition: opacity var(--dur-bbs) var(--ease-bbs);
-}
-
-.inline-link-underline:hover::after {
-  opacity: 1;
-}
-
-.image-w img {
-  transition: transform var(--dur-bbs) var(--ease-bbs);
-}
-
-.image-w:hover img {
-  transform: scale(var(--image-zoom-scale));
-}
-
-/* Marquees — the JS duplicates the track, the CSS just runs it */
-@keyframes loopX {
-  from {
-    transform: translateX(0%);
-  }
-  to {
-    transform: translateX(-100%);
-  }
-}
-
-@keyframes loopY {
-  from {
-    transform: translateY(0%);
-  }
-  to {
-    transform: translateY(-100%);
-  }
-}
-
-.loop-animate-x {
-  animation: loopX var(--loop-x-duration) linear infinite;
-  will-change: transform;
-}
-
-.loop-animate-y {
-  animation: loopY var(--loop-y-duration) linear infinite;
-  will-change: transform;
-}
-
-.loop-animate-x.reverse,
-.loop-animate-y.reverse {
-  animation-direction: reverse;
-}
-
-@keyframes svgDash {
-  to {
-    stroke-dashoffset: var(--svg-dash-offset);
-  }
-}
-
-.svg-animate-line {
-  stroke-dasharray: 10 10 !important;
-  animation: svgDash var(--svg-dash-duration) linear infinite;
-}
-
-.svg-animate-line.reverse {
-  animation-direction: reverse;
-}
-
-/* ============================================================
-   06. ACCESSIBILITY
+   07. ACCESSIBILITY
    ============================================================ */
 
 /* Webflow's .w-input:focus sets outline:0 — put a visible ring back. */
@@ -602,9 +658,37 @@ select.w-select {
 
   .image-w img,
   .link-underline::after,
-  .inline-link-underline::after {
+  .inline-link-underline {
     transition-duration: 1ms !important;
   }
+}
+
+/* ============================================================
+   08. EDITOR & DEV SUPPORTS
+   ============================================================ */
+
+/* Everything that makes the Designer canvas and the Editor behave
+   differently from a published page. One section, so "why does this look
+   wrong while designing" has a single place to look.
+
+   Written as descendant rules throughout: Webflow is not consistent about
+   whether .w-editor lands on <html> or <body>, and 0-2-0 beats the 0-1-0
+   rules these override regardless of source order. */
+
+/* Scaffolding that ships to the canvas but never to a visitor. */
+.g-embed-code,
+/* .g-grid-guide, */
+.w-webflow-badge,
+.cms-filter {
+  z-index: -99999 !important;
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* No preloader over the canvas — there is no JS there to dismiss it. */
+.w-editor .preloader {
+  display: none !important;
 }
 
 /* Keep JS-driven entrance animations from hiding content in the Editor. */
