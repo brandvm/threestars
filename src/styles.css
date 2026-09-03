@@ -729,6 +729,22 @@ html.lenis {
   cursor: pointer;
 }
 
+/* Figma width passthrough — set --figma-size inline to the raw Figma
+   pixel number.
+
+   /16 is only exact where the element's font-size IS the root size.
+   Body is Size/15 (0.9375em), so anything inheriting it computes 1em as
+   15px and lands 6.25% short: --figma-size:1280 renders 1200px, not
+   1280px. Set font-size:1rem alongside it, or switch to rem, if the
+   number has to be literal.
+
+   Matched on [style*=] rather than a class on purpose: with the property
+   absent the selector never matches, so nothing of the Designer's is
+   overridden. */
+[style*="--figma-size"] {
+  max-width: calc(1em * var(--figma-size) / 16);
+}
+
 /* Gradient fills */
 [data-gradient-text] {
   -webkit-background-clip: text;
