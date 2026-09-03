@@ -37,7 +37,7 @@
      of the Designer scales with the viewport. Ideal = the width the
      design was built at. */
   --size-unit: 16;
-  --size-container-ideal: 1680;
+  --size-container-ideal: 1440;
   --size-container-min: 991px;
   --size-container-max: 1680px;
 
@@ -105,6 +105,157 @@
     --size-container-ideal: 430;
     --size-container-min: 320px;
     --size-container-max: 428px;
+  }
+}
+
+/* ---- WIDE-GAMUT COLOUR OVERRIDES --------------------------------
+   Progressive enhancement layered over the Webflow variables. Both
+   blocks redefine the SAME custom properties Webflow emits, which is
+   what makes this cheap: every Semantic role is an alias, so it
+   compiles to `var(--_colors---brand--deep-navy)`. Overriding the
+   primitive here drags Text/Primary, Button/Primary Background and the
+   other 20 roles with it. There is deliberately no duplicate of the
+   Semantic layer below, and adding roles in the Designer later needs
+   no change here.
+
+   PRIORITY: OKLCH first, Display-P3 second. Both sit at :root, so at
+   equal specificity the later block wins — P3 takes precedence
+   wherever the display actually supports it, and OKLCH is what a
+   wide-gamut-incapable but modern browser falls back to. Hex in the
+   Designer output is the floor. Do not reorder these two blocks, and
+   never wrap either in @layer (CASCADE NOTES 3).
+
+   Utility/ is deliberately excluded. Transparent has no gamut, and
+   every u-muted-* step is a color-mix() against currentColor — it
+   resolves at use time and inherits whatever space the inherited text
+   colour is already in, so restating it here would do nothing.
+
+   Values converted from the Designer hex:
+   sRGB -> linear -> XYZ D65 -> OKLab -> OKLCH, and
+   sRGB -> linear -> XYZ D65 -> linear P3 -> sRGB transfer. Alpha is
+   carried through unchanged from the rgba() tints. */
+
+@supports (color: oklch(0% 0 0)) {
+  :root {
+    --_colors---brand--deep-navy:
+      oklch(24.69% 0.0749 260.78);
+    --_colors---brand--midnight-ink:
+      oklch(21.01% 0.0318 264.66);
+    --_colors---brand--warm-white:
+      oklch(97.53% 0.0040 106.47);
+    --_colors---brand--soft-stone:
+      oklch(88.36% 0.0081 106.56);
+    --_colors---brand--black:
+      oklch(0.00% 0.0000 0.00);
+    --_colors---brand--white:
+      oklch(100.00% 0.0000 0.00);
+    --_colors---navy-tint--navy-85:
+      oklch(24.69% 0.0749 260.78 / 0.85);
+    --_colors---navy-tint--navy-70:
+      oklch(24.69% 0.0749 260.78 / 0.7);
+    --_colors---navy-tint--navy-65:
+      oklch(24.69% 0.0749 260.78 / 0.65);
+    --_colors---navy-tint--navy-55:
+      oklch(24.69% 0.0749 260.78 / 0.55);
+    --_colors---navy-tint--navy-40:
+      oklch(24.69% 0.0749 260.78 / 0.4);
+    --_colors---navy-tint--navy-22:
+      oklch(24.69% 0.0749 260.78 / 0.22);
+    --_colors---navy-tint--navy-15:
+      oklch(24.69% 0.0749 260.78 / 0.15);
+    --_colors---navy-tint--navy-12:
+      oklch(24.69% 0.0749 260.78 / 0.12);
+    --_colors---navy-tint--navy-10:
+      oklch(24.69% 0.0749 260.78 / 0.1);
+    --_colors---warm-white-tint--warm-white-85:
+      oklch(97.53% 0.0040 106.47 / 0.85);
+    --_colors---warm-white-tint--warm-white-80:
+      oklch(97.53% 0.0040 106.47 / 0.8);
+    --_colors---warm-white-tint--warm-white-70:
+      oklch(97.53% 0.0040 106.47 / 0.7);
+    --_colors---warm-white-tint--warm-white-65:
+      oklch(97.53% 0.0040 106.47 / 0.65);
+    --_colors---warm-white-tint--warm-white-60:
+      oklch(97.53% 0.0040 106.47 / 0.6);
+    --_colors---warm-white-tint--warm-white-50:
+      oklch(97.53% 0.0040 106.47 / 0.5);
+    --_colors---warm-white-tint--warm-white-40:
+      oklch(97.53% 0.0040 106.47 / 0.4);
+    --_colors---warm-white-tint--warm-white-18:
+      oklch(97.53% 0.0040 106.47 / 0.18);
+    --_colors---warm-white-tint--warm-white-15:
+      oklch(97.53% 0.0040 106.47 / 0.15);
+    --_colors---warm-white-tint--warm-white-12:
+      oklch(97.53% 0.0040 106.47 / 0.12);
+    --_colors---warm-white-tint--warm-white-10:
+      oklch(97.53% 0.0040 106.47 / 0.1);
+    --_colors---soft-stone-tint--soft-stone-40:
+      oklch(88.36% 0.0081 106.56 / 0.4);
+    --_colors---midnight-ink-tint--midnight-ink-60:
+      oklch(21.01% 0.0318 264.66 / 0.6);
+  }
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  @media (color-gamut: p3) {
+    :root {
+      --_colors---brand--deep-navy:
+        color(display-p3 0.0603 0.1197 0.2569);
+      --_colors---brand--midnight-ink:
+        color(display-p3 0.0722 0.0933 0.1484);
+      --_colors---brand--warm-white:
+        color(display-p3 0.9686 0.9686 0.9579);
+      --_colors---brand--soft-stone:
+        color(display-p3 0.8510 0.8510 0.8296);
+      --_colors---brand--black:
+        color(display-p3 0.0000 0.0000 0.0000);
+      --_colors---brand--white:
+        color(display-p3 1.0000 1.0000 1.0000);
+      --_colors---navy-tint--navy-85:
+        color(display-p3 0.0603 0.1197 0.2569 / 0.85);
+      --_colors---navy-tint--navy-70:
+        color(display-p3 0.0603 0.1197 0.2569 / 0.7);
+      --_colors---navy-tint--navy-65:
+        color(display-p3 0.0603 0.1197 0.2569 / 0.65);
+      --_colors---navy-tint--navy-55:
+        color(display-p3 0.0603 0.1197 0.2569 / 0.55);
+      --_colors---navy-tint--navy-40:
+        color(display-p3 0.0603 0.1197 0.2569 / 0.4);
+      --_colors---navy-tint--navy-22:
+        color(display-p3 0.0603 0.1197 0.2569 / 0.22);
+      --_colors---navy-tint--navy-15:
+        color(display-p3 0.0603 0.1197 0.2569 / 0.15);
+      --_colors---navy-tint--navy-12:
+        color(display-p3 0.0603 0.1197 0.2569 / 0.12);
+      --_colors---navy-tint--navy-10:
+        color(display-p3 0.0603 0.1197 0.2569 / 0.1);
+      --_colors---warm-white-tint--warm-white-85:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.85);
+      --_colors---warm-white-tint--warm-white-80:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.8);
+      --_colors---warm-white-tint--warm-white-70:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.7);
+      --_colors---warm-white-tint--warm-white-65:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.65);
+      --_colors---warm-white-tint--warm-white-60:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.6);
+      --_colors---warm-white-tint--warm-white-50:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.5);
+      --_colors---warm-white-tint--warm-white-40:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.4);
+      --_colors---warm-white-tint--warm-white-18:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.18);
+      --_colors---warm-white-tint--warm-white-15:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.15);
+      --_colors---warm-white-tint--warm-white-12:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.12);
+      --_colors---warm-white-tint--warm-white-10:
+        color(display-p3 0.9686 0.9686 0.9579 / 0.1);
+      --_colors---soft-stone-tint--soft-stone-40:
+        color(display-p3 0.8510 0.8510 0.8296 / 0.4);
+      --_colors---midnight-ink-tint--midnight-ink-60:
+        color(display-p3 0.0722 0.0933 0.1484 / 0.6);
+    }
   }
 }
 
