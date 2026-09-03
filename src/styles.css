@@ -363,8 +363,20 @@ svg {
 }
 
 /* Container element ships with a 940px cap and its own breakpoints.
-   Delete this if you intend to use Webflow's Container as-is. */
-.w-layout-blockcontainer {
+   Delete this whole rule if you intend to use Webflow's Container as-is.
+
+   The :not() is load-bearing, not decoration. A BlockContainer carries
+   BOTH .w-layout-blockcontainer and its Designer class, and both are
+   0-1-0 — so a bare `.w-layout-blockcontainer { max-width: none }` here
+   beats a Designer class on source order (note 1) and silently kills any
+   max-width set in the Designer. That is not fixable by lowering
+   specificity: :where() drops to 0-0-0 and hands Webflow's 940px back.
+
+   So this sits at 0-2-0 to clear Webflow's default, and excludes the
+   wrapper classes that set their own cap from a token. ADD ANY NEW
+   CONTAINER CLASS THAT OWNS ITS max-width TO THIS LIST — otherwise its
+   cap will appear to work in the Designer and vanish on the live page. */
+.w-layout-blockcontainer:not(.s-wrapper) {
   max-width: none;
 }
 
