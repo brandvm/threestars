@@ -362,11 +362,14 @@ svg {
   display: none;
 }
 
-/* Container element ships with a 940px cap and its own breakpoints.
-   Delete this if you intend to use Webflow's Container as-is. */
- /* .w-layout-blockcontainer {
-  max-width: none;
-}  */
+/* Container ships a 940px cap and its own breakpoints; swap both for the
+   Layout token so a bare Container inherits the system width. Width
+   variants must be COMBO classes — a lone class on a Container is 0-1-0
+   and loses to this rule on source order. Fallback is `none`, so a
+   renamed collection/group/variable degrades to uncapped, not to 940. */
+.w-layout-blockcontainer {
+  max-width: var(--_layout---container--max-width, none);
+}
 
 /* Forms — Webflow hardcodes a #3898ec focus ring and grey/pink
    success/error panels. The :focus-visible rule in §06 restores the
