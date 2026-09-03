@@ -77,6 +77,9 @@
   --svg-dash-duration: 8s;
   --svg-dash-offset: 600;
 
+  /* Button icon */
+  --button-icon-shift: 0.25em;
+
   /* Zoom */
   --image-zoom-scale: 1.12;
 }
@@ -584,6 +587,17 @@ html.lenis {
   text-decoration-color: currentColor;
 }
 
+/* Button link — the icon nudges forward on hover. The transition sits on
+   the icon rather than on the :hover rule so it eases back out when the
+   pointer leaves, not just on the way in. */
+.button-link .icon {
+  transition: transform var(--dur-bbs) var(--ease-bbs);
+}
+
+.button-link:hover .icon {
+  transform: translateX(var(--button-icon-shift));
+}
+
 .image-w img {
   transition: transform var(--dur-bbs) var(--ease-bbs);
 }
@@ -808,6 +822,7 @@ html.lenis {
   }
 
   .image-w img,
+  .button-link .icon,
   .link-underline::after,
   .inline-link-underline {
     transition-duration: 1ms !important;
