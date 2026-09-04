@@ -99,6 +99,10 @@ function setupCard(card: HTMLElement): void {
   let region = 'europe';
   let anim: Animation | null = null;
   let sig = '';
+  /** The inlined map, once it has loaded. Null until then, and null
+   *  forever if the fetch fails — every path below falls back to the
+   *  masked-div camera rather than to nothing. */
+  let svg: SVGSVGElement | null = null;
   /** Whether the layer is laid out at full size (sharp) rather than
    *  scaled up from the unscaled box (soft, but what the keyframes need). */
   let atRest = false;
@@ -168,7 +172,35 @@ function setupCard(card: HTMLElement): void {
    *  MAX_RASTER caps the box and hands the remainder back to scale(), so a
    *  tall narrow card at high zoom degrades to the old softness rather
    *  than asking for a raster the compositor will refuse. */
+  /** The visible window expressed in map units.
+   *
+   *  Same geometry as the transform, read the other way round: with the
+   *  origin at 0 0 a map point at fraction fx lands at tx% * b.w + fx *
+   *  b.w * zf, so screen x 0 is fx = -tx/100/zf and the window is
+   *  cardW / (b.w * zf) wide. Aspect matches the card by construction,
+   *  because box() keeps b.w/b.h at the map's own ratio. */
+  function viewBoxOf(f: Frame, b: Box): string {
+    const x = (-f.tx / 100 / f.zf) * MAP_W;
+    const y = (-f.ty / 100 / f.zf) * MAP_H;
+    const w = (b.cardW / (b.w * f.zf)) * MAP_W;
+    const h = (b.cardH / (b.h * f.zf)) * MAP_H;
+    return `${x} ${y} ${w} ${h}`;
+  }
+
   function rest(f: Frame, b: Box): void {
+    if (svg) {
+      // Vector camera. The layer just fills the card and the framing lives
+      // in the viewBox, so there is no raster to outrun — sharp at any
+      // zoom, on any density, with no size to budget.
+      layer.style.width = '100%';
+      layer.style.height = '100%';
+      layer.style.transform = 'none';
+      layer.style.willChange = 'auto';
+      svg.setAttribute('viewBox', viewBoxOf(f, b));
+      atRest = true;
+      return;
+    }
+
     // Budget device pixels, not CSS pixels. A phone at dpr 3 renders a
     // 1912px-wide layer into 5736 device pixels, past the texture size
     // mobile GPUs will allocate — so the compositor rasterises it smaller
@@ -194,6 +226,11 @@ function setupCard(card: HTMLElement): void {
   /** The keyframes are written against the unscaled box, so the layer has
    *  to be back at b.w x b.h before one plays. */
   function flightLayout(b: Box): void {
+    // The keyframes move the whole layer, so the vector has to show the
+    // whole map again and let the transform do the framing. Compositing a
+    // scaled raster is what keeps 84 frames smooth; re-rendering the paths
+    // per frame would not be.
+    if (svg) svg.setAttribute('viewBox', `0 0 ${MAP_W} ${MAP_H}`);
     layer.style.width = `${b.w}px`;
     layer.style.height = `${b.h}px`;
     layer.style.willChange = 'transform';
@@ -225,6 +262,114 @@ function setupCard(card: HTMLElement): void {
       thumb.style.width = `${on.offsetWidth}px`;
       thumb.style.transform = `translateX(${on.offsetLeft}px)`;
       thumb.style.opacity = '1';
+    }
+  }
+
+  /** Make every id in the fetched markup unique to this card, and repoint
+   *  the url(#…) references at the new names. The section is a component
+   *  with more than one instance, and two copies of the same #landMask on
+   *  a page would both resolve to whichever parsed first. */
+  function uniquifyIds(root: SVGSVGElement, salt: string): void {
+    const renamed = new Map<string, string>();
+    for (const el of Array.from(root.querySelectorAll('[id]'))) {
+      const was = el.id;
+      const now = `${was}-${salt}`;
+      renamed.set(was, now);
+      el.id = now;
+    }
+    if (!renamed.size) return;
+    const refs = ['mask', 'fill', 'stroke', 'clip-path', 'filter'];
+    for (const el of Array.from(root.querySelectorAll('*'))) {
+      for (const name of refs) {
+        const v = el.getAttribute(name);
+        if (!v || !v.includes('url(#')) continue;
+        el.setAttribute(
+          name,
+          v.replace(/url\(#([^)]+)\)/g, (m, id) =>
+            renamed.has(id) ? `url(#${renamed.get(id)})` : m,
+          ),
+        );
+      }
+    }
+  }
+
+  /** Swap the masked div for the real vector.
+   *
+   *  The CSS mask has been taken off .map-layer so the 1.5MB asset is not
+   *  pulled during page load — that download is the whole reason this is
+   *  deferred. If the fetch fails the mask goes back on as an inline
+   *  style, which is the old blurry-but-present behaviour rather than an
+   *  empty card. */
+  function loadVector(src: string): void {
+    if (svg) return;
+    fetch(src)
+      .then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status)))))
+      .then((text) => {
+        const parsed = new DOMParser().parseFromString(text, 'image/svg+xml');
+        const found = parsed.querySelector('svg');
+        if (!found || parsed.querySelector('parsererror')) throw new Error('bad svg');
+
+        const el = document.importNode(found, true) as SVGSVGElement;
+        uniquifyIds(el, Math.random().toString(36).slice(2, 8));
+        // Its own width/height would fight the layer box; the viewBox is
+        // the only geometry we want it to honour.
+        el.removeAttribute('width');
+        el.removeAttribute('height');
+        el.setAttribute('preserveAspectRatio', 'none');
+        el.style.display = 'block';
+        el.style.width = '100%';
+        el.style.height = '100%';
+
+        layer.replaceChildren(el);
+        svg = el;
+
+        const b = box();
+        if (b && !flying()) rest(frame(region, b), b);
+      })
+      .catch(() => {
+        // Both halves go back together: the colour is what the mask cuts
+        // the map out of, so restoring one without the other gives either
+        // a solid block or nothing at all.
+        const v = `url(${src}) no-repeat 0 0 / 100% 100%`;
+        layer.style.backgroundColor = 'currentColor';
+        layer.style.setProperty('-webkit-mask', v);
+        layer.style.setProperty('mask', v);
+        const b = box();
+        if (b && !flying()) rest(frame(region, b), b);
+      });
+  }
+
+  /** Off the critical path on purpose: whichever comes first, the browser
+   *  going quiet or the section getting near the viewport. The timeout on
+   *  the idle callback stops a permanently busy page from never loading
+   *  it at all. */
+  function scheduleLoad(): void {
+    const src = card.getAttribute('data-map-src');
+    if (!src) return;
+
+    let started = false;
+    const go = (): void => {
+      if (started) return;
+      started = true;
+      loadVector(src);
+    };
+
+    const idle = (window as unknown as {
+      requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void;
+    }).requestIdleCallback;
+    if (idle) idle(go, { timeout: 4000 });
+    else setTimeout(go, 1500);
+
+    if (window.IntersectionObserver) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((e) => e.isIntersecting)) return;
+          io.disconnect();
+          go();
+        },
+        { rootMargin: '200% 0px' },
+      );
+      io.observe(card);
     }
   }
 
@@ -319,6 +464,7 @@ function setupCard(card: HTMLElement): void {
   }
 
   sync();
+  scheduleLoad();
   if (window.ResizeObserver) new ResizeObserver(sync).observe(card);
   addEventListener('resize', sync);
   setInterval(sync, 500); // covers images/CMS changing card height
