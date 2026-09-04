@@ -18,13 +18,17 @@ const FOCUSABLE = [
 export function initBioModal(lenis?: Lenis): void {
   let openModal: HTMLElement | null = null;
   let opener: HTMLElement | null = null;
+  /** Where the dialog lives when closed, so it can be put back exactly. */
+  let home: { parent: Node; next: Node | null } | null = null;
+  /** Whether the press that started this click landed outside the panel. */
+  let pressedOutside = false;
   const inerted: Element[] = [];
 
   /** Hide everything outside the dialog from assistive tech and the tab
-   *  order. Walking up from the dialog and inerting each level's *siblings*
-   *  is what makes this work: the dialog sits deep inside the page wrapper,
-   *  so inerting the body's children directly would skip the wrapper — it
-   *  contains the dialog — and leave the whole page readable behind it.
+   *  order by inerting each level's *siblings* on the way up to body. With
+   *  the dialog portalled to body this is a single pass over body's other
+   *  children, but the walk is kept general so it stays correct if the
+   *  dialog is ever shown in place.
    *
    *  `inert` rather than aria-hidden: it removes the subtree from the
    *  accessibility tree *and* from the tab order, so it does the job the
@@ -50,6 +54,19 @@ export function initBioModal(lenis?: Lenis): void {
   const show = (modal: HTMLElement, trigger: HTMLElement): void => {
     openModal = modal;
     opener = trigger;
+
+    // Portal to body. position:fixed is only viewport-relative until an
+    // ancestor takes a transform, filter or contain — any of those make it
+    // the containing block and the dialog would be pinned inside the card
+    // instead of the window. The same ancestors create stacking contexts
+    // that z-index:900 cannot climb out of. Moving it makes the dialog
+    // independent of whatever the Designer does to the collection item.
+    //
+    // Recorded rather than appended-and-forgotten: the trigger finds its
+    // dialog by walking up to the collection item and querying inside it,
+    // so a dialog left on body would be unreachable on the second open.
+    home = { parent: modal.parentNode!, next: modal.nextSibling };
+    document.body.appendChild(modal);
 
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
@@ -81,10 +98,15 @@ export function initBioModal(lenis?: Lenis): void {
     openModal.classList.remove('is-open');
     openModal.setAttribute('aria-hidden', 'true');
 
-    // Before the focus call below: the trigger is a sibling of the dialog
-    // inside the collection item, so it is one of the inerted elements and
-    // cannot take focus until this runs.
+    // Before the focus call below: the trigger's whole branch is inerted
+    // while the dialog is open, so it cannot take focus until this runs.
     releaseInert();
+
+    // Back into the collection item it came from, at the same index.
+    if (home) {
+      home.parent.insertBefore(openModal, home.next);
+      home = null;
+    }
 
     document.documentElement.classList.remove('bio-lock');
     lenis?.start();
@@ -112,7 +134,31 @@ export function initBioModal(lenis?: Lenis): void {
     if (target.closest('[data-bio-close]')) {
       e.preventDefault();
       hide();
+      return;
     }
+
+    // Backdrop dismiss. Anything inside the dialog but outside the panel is
+    // scrim, so this needs no attribute in the Designer. Both the press and
+    // the release have to have landed there — otherwise selecting text in
+    // the panel and dragging past its edge would close the dialog on
+    // release, which reads as the click being stolen.
+    if (
+      openModal &&
+      pressedOutside &&
+      openModal.contains(target) &&
+      !target.closest('.bio-modal-panel')
+    ) {
+      hide();
+    }
+  });
+
+  document.addEventListener('mousedown', (e) => {
+    const target = e.target;
+    pressedOutside =
+      !!openModal &&
+      target instanceof Element &&
+      openModal.contains(target) &&
+      !target.closest('.bio-modal-panel');
   });
 
   document.addEventListener('keydown', (e) => {
