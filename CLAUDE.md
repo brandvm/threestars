@@ -27,6 +27,18 @@ file before touching any of them.
 Environments: prod = pinned jsDelivr tag; `*.webflow.io` = GitHub Pages
 staging; `?bv-dev=1` = localhost.
 
+## Working from another machine
+
+Sessions cannot move between machines — they are keyed to one machine's
+absolute project path. The repo is the handoff: push before switching, pull
+on arrival, start a fresh session. This file loads automatically.
+
+Setup on a new machine: clone, `corepack enable && pnpm install`, then
+approve the project MCP server on first launch and run `/mcp` to authorise
+Webflow (OAuth, per machine). `.mcp.json` carries the server definition;
+claude.ai connectors (Figma, Slack, Drive…) follow the account, not the
+machine.
+
 ## Gotchas that have already cost time
 
 **The Designer canvas never runs scripts.** The config script that rewrites
