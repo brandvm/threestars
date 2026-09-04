@@ -669,6 +669,29 @@ html.lenis {
   animation-direction: reverse;
 }
 
+/* Press card — the whole card is the click target, but only the headline
+   carries the anchor. A stretched ::after does the widening, which keeps
+   the accessible name to the headline alone rather than the card's entire
+   text, and leaves one tab stop per card instead of three. .press-card
+   supplies the positioning context. The trade is text selection inside the
+   card, which the overlay swallows.
+
+   Webflow cannot author `content`, so this half of the pattern has to live
+   here rather than on the class in the Designer. */
+.press-card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* The ring is hoisted to the card: :focus-visible on the anchor outlines
+   the headline text only, which reads as a stray fragment once the overlay
+   has made the whole card clickable. */
+.press-card:has(.press-card-link:focus-visible) {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 /* ============================================================
    06. UTILITIES
    ============================================================ */
