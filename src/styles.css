@@ -581,8 +581,13 @@ html.bio-lock {
 
    The 0-1-0 class beats `a { text-decoration: none }` in 02 BASE.
    First color declaration is the fallback where color-mix is missing:
-   a full-strength underline rather than none at all. */
-.inline-link-underline {
+   a full-strength underline rather than none at all.
+
+   Rich Text links get this without the class: the CMS generates the <a>
+   and there is nothing to put a class on. Listed here rather than copied
+   into the prose block below so the treatment has one definition. */
+.inline-link-underline,
+.w-richtext a {
   text-decoration-line: underline;
   text-decoration-color: currentColor;
   text-decoration-color: color-mix(
@@ -593,7 +598,8 @@ html.bio-lock {
   transition: text-decoration-color var(--dur-bbs) var(--ease-bbs);
 }
 
-.inline-link-underline:hover {
+.inline-link-underline:hover,
+.w-richtext a:hover {
   text-decoration-color: currentColor;
 }
 
@@ -711,15 +717,35 @@ html.bio-lock {
   display: flex;
 }
 
-/* Rich Text paragraph rhythm. The Designer styles the wrapper; it cannot
-   reach the <p> children the CMS generates inside it.
+/* Rich Text rhythm. The Designer can style the Rich Text wrapper but never
+   the h/p/ul/ol/li inside it — the CMS generates those and there is nothing
+   to hang a class on, so their spacing has to come from here.
 
-   Scoped to .bio-modal-main rather than a class on the Rich Text itself:
-   there are two Rich Text blocks in the panel and only one of them carries
-   a class, so anchoring on the column catches both. */
-.bio-modal-main p + p {
+   Scoped to .w-richtext on purpose. §02 zeroes these margins globally
+   because components space themselves with flex gaps, and element margins
+   there would add to the gap rather than replace it. This puts the rhythm
+   back only where the markup is prose nobody can reach.
+
+   :where() keeps the inner half at zero specificity, so the whole selector
+   is 0-1-0 — enough to beat the 0-0-1 element reset, weak enough that a
+   Designer class still wins. */
+.w-richtext :where(h1, h2, h3, h4, h5, h6, p) {
   margin-top: 1em;
+  margin-bottom: 0.5em;
 }
+
+.w-richtext :where(ul, ol) {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.w-richtext li {
+  margin-bottom: 0.25em;
+}
+
+/* The list indent and the first/last-child margin trims already live in
+   §03 — that is where the rest of the Rich Text patching sits, and its
+   versions also cover the wrapper div Webflow sometimes nests. */
 
 /* ============================================================
    06. UTILITIES
