@@ -42,7 +42,9 @@ script that opens an `EventSource` to `/esbuild` and reloads the page on
 rebuild. Live reload works in the browser; it does **not** work on the
 Designer canvas, which never runs scripts.
 
-`dist/` is gitignored and rebuilt on every push.
+`dist/` is gitignored for day-to-day work and rebuilt by CI on every push.
+A release is the one time it gets committed, and that takes `git add -f`
+— see [Releasing](#releasing).
 
 ## How the files reach the page
 
@@ -65,9 +67,49 @@ Pushing to `master` triggers
 runs `pnpm build` and publishes `dist/` to GitHub Pages. That is the
 staging URL the `*.webflow.io` site loads.
 
-Production is pinned to a jsDelivr tag, so a staging deploy does not
-touch the live site — cutting a release means tagging the repo and
-bumping `VER` in `loader.html`.
+Production is pinned to a jsDelivr tag, so a staging deploy never touches
+the live site.
+
+## Releasing
+
+Production serves `dist/` out of a git tag via jsDelivr, so the built
+files have to be committed before the tag is cut:
+
+```bash
+pnpm build
+git add -f dist && git commit -m "release: vX.Y.Z"
+git tag vX.Y.Z && git push && git push --tags
+git rm -r --cached dist && git commit -m "chore: untrack dist after vX.Y.Z"
+git push
+```
+
+`dist/` is gitignored for day-to-day work, so the `-f` is required —
+without it the release commit is empty, the tag carries no build, and
+jsDelivr serves a 404 to the live site.
+
+The last two lines put it back. `.gitignore` only applies to files git is
+not already tracking, so the release commit makes `dist/` tracked and the
+ignore rule stops having any effect on it — from then on every rebuild
+shows up as a modification and rides along with the next `git add .`,
+quietly parking a minified bundle inside unrelated commits.
+`git rm --cached` un-tracks it while leaving the files on disk. The tag
+still points at the commit that contains the build, so jsDelivr is
+unaffected; only what `master` tracks going forward changes.
+
+Then bump `VER` in the Webflow snippets (see [`loader.html`](loader.html))
+and publish. Rollback is reverting those version strings.
+
+Three rules:
+
+- `dist/` must be committed **before** the tag is pushed. A tag without it
+  makes every pinned production URL 404.
+- A pushed tag must **never** be moved with `tag -f`. jsDelivr snapshots a
+  version once and keeps it forever, so a half-baked snapshot is permanent.
+  Botched a release? Cut the next patch version instead.
+- Un-track `dist/` again once the tag is pushed, or the ignore rule stays
+  dead for every commit after the first release.
+
+Never point production at `@latest` or a branch URL.
 
 ## Project structure
 

@@ -1,28 +1,10 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-
-# Dependency directories
 node_modules/
+.DS_Store
 
-# TypeScript v1 declaration files
-typings/
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# dotenv environment variables file
-.env
-
-# Production files
+# Build output. Rebuilt by CI on every push to master; committed with
+# `git add -f dist` only when cutting a release tag (see README).
 dist
+
+# Not in the template, kept because this repo is public: never let a
+# stray env file through.
+.env

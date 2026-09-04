@@ -10,8 +10,19 @@ repo owns tokens-as-CSS, resets, utilities, and JS-paired styles.
     pnpm build    # minified -> dist/
     pnpm check    # tsc --noEmit
 
-`dist/` is gitignored. Pushing to `master` triggers `.github/workflows/
-staging.yml`, which builds and deploys `dist/` to GitHub Pages.
+Pushing to `master` triggers `.github/workflows/staging.yml`, which builds
+and deploys `dist/` to GitHub Pages.
+
+`dist/` is gitignored, so a release commit needs `git add -f dist` — without
+the `-f` the commit is empty, the tag carries no build, and every pinned
+jsDelivr URL 404s. Same failure shape as the `VER` placeholder below, and
+just as invisible: staging never touches the prod URLs.
+
+That `-f` then has to be undone. `.gitignore` only governs files git is not
+already tracking, so the release commit makes `dist/` tracked and the ignore
+rule goes dead — every later rebuild shows as modified and gets swept into
+unrelated commits by `git add .`. `git rm -r --cached dist` after the tag is
+pushed restores it. The tag keeps its snapshot, so jsDelivr is unaffected.
 
 ## How CSS/JS reach the page
 
