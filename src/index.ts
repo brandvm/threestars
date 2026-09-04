@@ -1,3 +1,4 @@
+import { initBioModal } from './modules/bio-modal';
 import { initClock } from './modules/clock';
 import { initParallax } from './modules/parallax';
 import { initRegionMap } from './modules/region-map';
@@ -12,6 +13,7 @@ initClock();
 initYear();
 initRegionMap();
 initParallax(lenis);
+initBioModal(lenis);
 
 // Release the pre-paint scroll lock set by the head bootstrap.
 document.documentElement.classList.remove('is-loading');
