@@ -18,8 +18,8 @@ const FOCUSABLE = [
 export function initBioModal(lenis?: Lenis): void {
   let openModal: HTMLElement | null = null;
   let opener: HTMLElement | null = null;
-  /** Where the dialog lives when closed, so it can be put back exactly. */
-  let home: { parent: Node; next: Node | null } | null = null;
+  /** The dialog currently moved to body, and where to put it back. */
+  let portalled: { el: HTMLElement; parent: Node; next: Node | null } | null = null;
   /** Whether the press that started this click landed outside the panel. */
   let pressedOutside = false;
   const inerted: Element[] = [];
@@ -51,6 +51,12 @@ export function initBioModal(lenis?: Lenis): void {
     inerted.length = 0;
   };
 
+  const restorePortal = (): void => {
+    if (!portalled) return;
+    portalled.parent.insertBefore(portalled.el, portalled.next);
+    portalled = null;
+  };
+
   const show = (modal: HTMLElement, trigger: HTMLElement): void => {
     openModal = modal;
     opener = trigger;
@@ -65,7 +71,7 @@ export function initBioModal(lenis?: Lenis): void {
     // Recorded rather than appended-and-forgotten: the trigger finds its
     // dialog by walking up to the collection item and querying inside it,
     // so a dialog left on body would be unreachable on the second open.
-    home = { parent: modal.parentNode!, next: modal.nextSibling };
+    portalled = { el: modal, parent: modal.parentNode!, next: modal.nextSibling };
     document.body.appendChild(modal);
 
     modal.classList.add('is-open');
@@ -102,11 +108,10 @@ export function initBioModal(lenis?: Lenis): void {
     // while the dialog is open, so it cannot take focus until this runs.
     releaseInert();
 
-    // Back into the collection item it came from, at the same index.
-    if (home) {
-      home.parent.insertBefore(openModal, home.next);
-      home = null;
-    }
+    // The dialog stays on body until the next open. Moving a node cancels
+    // the transitions running on it, so putting it back here would cut the
+    // fade and scale-down off on their first frame. It is display:none by
+    // then either way, so where it sits is invisible.
 
     document.documentElement.classList.remove('bio-lock');
     lenis?.start();
@@ -122,6 +127,11 @@ export function initBioModal(lenis?: Lenis): void {
 
     const trigger = target.closest<HTMLElement>('[data-bio-open]');
     if (trigger) {
+      // Whatever was opened last is still parked on body. Put it back before
+      // looking, or the lookup below — which walks up to the collection item
+      // and queries inside it — would miss a dialog sitting outside its item.
+      restorePortal();
+
       const item = trigger.closest('.w-dyn-item') ?? trigger.closest('[role="listitem"]');
       const modal = item?.querySelector<HTMLElement>('.bio-modal');
       if (modal) {

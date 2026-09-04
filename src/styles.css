@@ -60,6 +60,11 @@
   /* Motion */
   --ease-bbs: cubic-bezier(0.64, 0.05, 0, 1);
   --dur-bbs: 800ms;
+  /* The Designer's own convention for interactive feedback — the trigger,
+     the close button and the mandate card all transition over 400ms with
+     the easing above. Named so JS-paired states can match rather than
+     reach for --dur-bbs, which is scaled for the long editorial moves. */
+  --dur-ui: 400ms;
 
   /* Layout */
   --nav-h: 6rem;
@@ -715,6 +720,51 @@ html.bio-lock {
    — this sheet loads after Webflow's. */
 .bio-modal.is-open {
   display: flex;
+  opacity: 1;
+}
+
+/* Fading something out of display:none takes three pieces, and it fails
+   silently without any one of them.
+
+   `display` cannot be interpolated, so `allow-discrete` flips it at the far
+   end of the transition instead of the near one: flex before the fade in
+   begins, and still flex until the fade out has finished. Without it the
+   element would be gone on the first frame of the close and there would be
+   nothing left to fade.
+
+   @starting-style then supplies the value to animate *from* on the frame
+   the element first becomes displayed. A newly displayed element has no
+   previous computed style, so with nothing here the browser has no pair to
+   interpolate between and simply paints it at opacity 1. */
+.bio-modal {
+  opacity: 0;
+  transition:
+    opacity var(--dur-ui) var(--ease-bbs),
+    display var(--dur-ui) var(--ease-bbs) allow-discrete;
+}
+
+@starting-style {
+  .bio-modal.is-open {
+    opacity: 0;
+  }
+}
+
+/* The panel rides the same transition. Its resting 0.9 is on the base
+   class rather than only in @starting-style so the close scales back down
+   as well, instead of holding full size while the scrim fades out. */
+.bio-modal-panel {
+  transform: scale(0.9);
+  transition: transform var(--dur-ui) var(--ease-bbs);
+}
+
+.bio-modal.is-open .bio-modal-panel {
+  transform: scale(1);
+}
+
+@starting-style {
+  .bio-modal.is-open .bio-modal-panel {
+    transform: scale(0.9);
+  }
 }
 
 /* Prose rhythm. The Designer can style the Rich Text wrapper but never the
@@ -951,6 +1001,15 @@ html.bio-lock {
   .map-layer,
   .toggle-thumb,
   .toggle-item {
+    transition: none !important;
+  }
+
+  /* The dialog still opens and closes, it just arrives. Dropping the
+     transition also drops the allow-discrete delay, so display flips on
+     the same frame rather than lingering for the length of a fade that is
+     no longer running. */
+  .bio-modal,
+  .bio-modal-panel {
     transition: none !important;
   }
 }
