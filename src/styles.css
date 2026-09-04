@@ -799,6 +799,38 @@ html.bio-lock {
    §03 — that is where the rest of the Rich Text patching sits, and its
    versions also cover the wrapper div Webflow sometimes nests. */
 
+/* Map section, narrow. Authored here rather than on Webflow breakpoints
+   because 1024 and 560 are deliberate and the Designer's stops are 991 /
+   767 / 478 — there is nowhere in the panel to put these.
+
+   The shell is .mandate-grid, not .map-grid, which does not exist. Its
+   sibling .mandate-content spans two of the three columns, so collapsing
+   to one column has to release that span as well or the copy keeps
+   reserving a track that is no longer there. */
+@media (max-width: 1024px) {
+  .mandate-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mandate-content {
+    grid-column: auto;
+  }
+
+  /* Height comes off the aspect ratio once the card is no longer sharing a
+     row with the copy, so the 40em floor would only fight it. */
+  .map-card {
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 4 / 5;
+  }
+}
+
+@media (max-width: 560px) {
+  .map-card {
+    aspect-ratio: 1 / 1;
+  }
+}
+
 /* ============================================================
    06. UTILITIES
    ============================================================ */
