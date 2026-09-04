@@ -132,9 +132,28 @@ Both ends of a transition must come from the same family or it snaps.
 - **`VER = "X.Y.Z"` in `loader.html`, and the repo has zero git tags.** Prod
   CSS and JS both 404 the moment a custom domain is attached. Cheapest fix,
   highest consequence
+- **Press CMS is placeholder data.** All seven items have
+  `article-url = https://example.com`, so every card links nowhere. "The
+  return of Italy's debt play" also exists twice — 2019 and 2021, different
+  slugs, same image. Blocks a real launch, not staging
+- **`.eyebrow` and `.meta` fail AA.** Both resolve to `Text/Tertiary` →
+  `Navy Tint/Navy 55`, which composites to ≈3.7:1 on `Background/Page`
+  where AA wants 4.5:1. Neither qualifies for the large-text exemption:
+  `Size/Eyebrow` is `Size/12` and `Size/Meta` is `Size/11`, so ~11.25px and
+  ~10.3px at the 15px root. `Navy 65` is the first step that clears it
+  (≈5.05:1); `Navy 70` gives ≈5.9:1. One token, but it moves every eyebrow
+  and date on the site
+- The LinkedIn row in the bio modal needs conditional visibility set in the
+  Designer (LinkedIn → is set). The MCP rejects it — "not inside a CMS
+  context" — even though the href beside it is CMS-bound. May already be
+  covered by `.w-dyn-bind-empty` in §03; check before spending time
 - Accessibility, unstarted: root font-size overrides the browser's font-size
   preference; no `color-scheme`; `[data-gradient-text]` renders invisible
   under forced-colors
 - Footer semantics: nav links have no landmark and are not lists; column
   labels are inert `div`s; logo SVG is not `aria-hidden`
 - One moderate Dependabot advisory
+- Optional: the map SVG is 1.5MB / 570KB gzipped and auto-traced polylines,
+  which simplify well — RDP at tolerance 0.6 keeps 22.7% of the points for
+  101KB gzipped, sub-device-pixel at the tightest zoom the camera reaches.
+  Worth it only if a settle ever hitches; it is one URL swap
