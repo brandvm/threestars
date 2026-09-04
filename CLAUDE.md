@@ -78,6 +78,14 @@ Figma-px ÷ 16 therefore undershoot: `Container/Max Width: 80em` renders
 1200px where Figma wants 1280px; gutters 75px vs 80px. UNRESOLVED — see
 Open decisions.
 
+**`.map-layer` has no `mask` and no `background-color`, on purpose.** Do
+not put them back. `region-map.ts` fetches the SVG named by `data-map-src`
+on the map card, inlines it, and frames it with `viewBox` — as a CSS mask
+it was a raster, and no raster survives 280% zoom on a phone. Re-adding
+the background paints a solid block behind the vector; re-adding the mask
+pulls 570KB during page load, which is the thing the idle fetch exists to
+avoid. Both go back on automatically, inline, only if the fetch fails.
+
 ## Webflow MCP limits
 
 Worked around, not fixed. Do not rediscover these:
