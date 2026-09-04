@@ -712,8 +712,12 @@ html.bio-lock {
 }
 
 /* Rich Text paragraph rhythm. The Designer styles the wrapper; it cannot
-   reach the <p> children the CMS generates inside it. */
-.bio-modal-body p + p {
+   reach the <p> children the CMS generates inside it.
+
+   Scoped to .bio-modal-main rather than a class on the Rich Text itself:
+   there are two Rich Text blocks in the panel and only one of them carries
+   a class, so anchoring on the column catches both. */
+.bio-modal-main p + p {
   margin-top: 1em;
 }
 

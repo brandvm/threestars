@@ -53,6 +53,14 @@ export function initBioModal(lenis?: Lenis): void {
 
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
+
+    // Name the dialog from the heading. It cannot be done in the Designer:
+    // aria-label takes no CMS binding on a Block, and aria-labelledby would
+    // need an id, which repeats across every item of the collection list and
+    // would then resolve to the first person's name for everyone.
+    const name = modal.querySelector('.bio-modal-name')?.textContent?.trim();
+    if (name) modal.setAttribute('aria-label', name);
+
     inertOutside(modal);
 
     // Lenis animates window scroll itself, so overflow:hidden alone does not
