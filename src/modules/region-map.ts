@@ -169,7 +169,12 @@ function setupCard(card: HTMLElement): void {
    *  tall narrow card at high zoom degrades to the old softness rather
    *  than asking for a raster the compositor will refuse. */
   function rest(f: Frame, b: Box): void {
-    const fit = Math.min(1, MAX_RASTER / Math.max(b.w * f.zf, b.h * f.zf));
+    // Budget device pixels, not CSS pixels. A phone at dpr 3 renders a
+    // 1912px-wide layer into 5736 device pixels, past the texture size
+    // mobile GPUs will allocate — so the compositor rasterises it smaller
+    // and scales up, which is the blur this was meant to remove.
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const fit = Math.min(1, MAX_RASTER / (dpr * Math.max(b.w * f.zf, b.h * f.zf)));
     const l = b.w * f.zf * fit;
     const h = b.h * f.zf * fit;
     layer.style.width = `${l}px`;
@@ -177,6 +182,12 @@ function setupCard(card: HTMLElement): void {
     layer.style.transform = `translate(${(f.tx * b.w) / l}%,${
       (f.ty * b.h) / h
     }%) scale(${1 / fit})`;
+    // Released at rest. will-change: transform pins the layer in a
+    // composited texture permanently, and that texture is what gets capped
+    // and resampled; without it the mask is painted at document
+    // resolution. flightLayout puts it back for the animation, which is
+    // the only time the promotion earns anything.
+    layer.style.willChange = 'auto';
     atRest = true;
   }
 
@@ -185,6 +196,7 @@ function setupCard(card: HTMLElement): void {
   function flightLayout(b: Box): void {
     layer.style.width = `${b.w}px`;
     layer.style.height = `${b.h}px`;
+    layer.style.willChange = 'transform';
     atRest = false;
   }
 
