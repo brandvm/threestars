@@ -867,6 +867,12 @@ html.lenis {
   .service-card:hover .icon-component {
     transform: none;
   }
+
+  .map-layer,
+  .toggle-thumb,
+  .toggle-item {
+    transition: none !important;
+  }
 }
 
 /* ============================================================
