@@ -601,6 +601,17 @@ html.lenis {
   transform: translateX(var(--button-icon-shift));
 }
 
+/* Card arrow nudge. Transition on the icon so it eases both ways; the
+   transform fires from the CARD's hover, so anywhere on the card works. */
+.service-card .icon-component {
+  transition: transform 400ms var(--ease-bbs);
+  will-change: transform;
+}
+
+.service-card:hover .icon-component {
+  transform: translateX(0.25em);
+}
+
 .image-w img {
   transition: transform var(--dur-bbs) var(--ease-bbs);
 }
@@ -845,6 +856,16 @@ html.lenis {
   .link-underline::after,
   .inline-link-underline {
     transition-duration: 1ms !important;
+  }
+
+  /* Removed outright rather than made instant: on a card the nudge is
+     decoration, not feedback, so there is nothing to preserve. */
+  .service-card .icon-component {
+    transition: none;
+  }
+
+  .service-card:hover .icon-component {
+    transform: none;
   }
 }
 
