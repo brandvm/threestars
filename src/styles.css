@@ -583,11 +583,11 @@ html.bio-lock {
    First color declaration is the fallback where color-mix is missing:
    a full-strength underline rather than none at all.
 
-   Rich Text links get this without the class: the CMS generates the <a>
-   and there is nothing to put a class on. Listed here rather than copied
-   into the prose block below so the treatment has one definition. */
+   Links inside Content RTE get this without the class: the CMS generates
+   the <a> and there is nothing to put a class on. Listed here rather than
+   copied into the prose block below so the treatment has one definition. */
 .inline-link-underline,
-.w-richtext a {
+.content-rte a {
   text-decoration-line: underline;
   text-decoration-color: currentColor;
   text-decoration-color: color-mix(
@@ -599,7 +599,7 @@ html.bio-lock {
 }
 
 .inline-link-underline:hover,
-.w-richtext a:hover {
+.content-rte a:hover {
   text-decoration-color: currentColor;
 }
 
@@ -717,29 +717,31 @@ html.bio-lock {
   display: flex;
 }
 
-/* Rich Text rhythm. The Designer can style the Rich Text wrapper but never
-   the h/p/ul/ol/li inside it — the CMS generates those and there is nothing
-   to hang a class on, so their spacing has to come from here.
+/* Prose rhythm. The Designer can style the Rich Text wrapper but never the
+   h/p/ul/ol/li inside it — the CMS generates those and there is nothing to
+   hang a class on, so their spacing has to come from here.
 
-   Scoped to .w-richtext on purpose. §02 zeroes these margins globally
-   because components space themselves with flex gaps, and element margins
-   there would add to the gap rather than replace it. This puts the rhythm
-   back only where the markup is prose nobody can reach.
+   Opted into with the Content RTE class, not applied to every .w-richtext.
+   §02 zeroes these margins because components space themselves with flex
+   gaps, and element margins there would add to the gap rather than replace
+   it; a Rich Text used as a component field wants to stay in that world.
+   Marking the ones that are prose keeps the choice explicit and reversible
+   per element.
 
    :where() keeps the inner half at zero specificity, so the whole selector
    is 0-1-0 — enough to beat the 0-0-1 element reset, weak enough that a
    Designer class still wins. */
-.w-richtext :where(h1, h2, h3, h4, h5, h6, p) {
+.content-rte :where(h1, h2, h3, h4, h5, h6, p) {
   margin-top: 1em;
   margin-bottom: 0.5em;
 }
 
-.w-richtext :where(ul, ol) {
+.content-rte :where(ul, ol) {
   margin-top: 1em;
   margin-bottom: 1em;
 }
 
-.w-richtext li {
+.content-rte li {
   margin-bottom: 0.25em;
 }
 
