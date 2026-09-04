@@ -817,17 +817,16 @@ html.bio-lock {
   }
 
   /* Height comes off the aspect ratio once the card is no longer sharing a
-     row with the copy, so the 40em floor would only fight it. */
+     row with the copy, so the 40em floor would only fight it.
+
+     4/5 holds all the way down. Squaring it off on the narrowest screens
+     takes height away from the card exactly where there is least of it,
+     and the camera is framing a landscape map — a square window crops the
+     most off the sides at the point the view is already tightest. */
   .map-card {
     min-height: 0;
     height: auto;
     aspect-ratio: 4 / 5;
-  }
-}
-
-@media (max-width: 560px) {
-  .map-card {
-    aspect-ratio: 1 / 1;
   }
 }
 
