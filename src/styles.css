@@ -425,6 +425,24 @@ select.w-select {
   cursor: pointer;
 }
 
+/* Native contact controls, configured from Webflow data attributes. */
+select.w-select[data-contact-subject] {
+  padding-right: 2.5em;
+  text-overflow: ellipsis;
+}
+
+select[data-contact-subject][data-empty] {
+  color: var(--_colors-semantic---text--muted);
+}
+
+select[data-contact-subject] option {
+  color: var(--_colors-semantic---text--primary);
+}
+
+textarea[data-contact-placeholder] {
+  resize: vertical;
+}
+
 /* Components. Only the defaults that are always in the way — navbar
    internals are left alone deliberately, since Webflow's floats are
    load-bearing for the built-in nav. */
@@ -799,6 +817,157 @@ html.bio-lock {
    §03 — that is where the rest of the Rich Text patching sits, and its
    versions also cover the wrapper div Webflow sometimes nests. */
 
+/* Credentials map. Geometry and responsive layout live in the Designer;
+   these rules provide the overlay, camera and interactive selection states. */
+.credentials-map-image[data-vector-ready="true"] {
+  visibility: hidden;
+}
+
+.credentials-map-vector [data-credentials-region] {
+  transition: opacity 180ms ease-out;
+}
+
+.credentials-map-scene::after {
+  content: "";
+  position: absolute;
+  /* Cover the image's visible overflow above the map as well as its sides. */
+  top: -20em;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to bottom,
+    var(--_colors---brand--midnight-ink, #101827) 28%,
+    transparent 55%, transparent 84%,
+    var(--_colors---brand--midnight-ink, #101827) 100%);
+}
+
+.credentials-marker {
+  transition: box-shadow var(--dur-ui) var(--ease-bbs),
+    background-color var(--dur-ui) var(--ease-bbs);
+}
+
+.credentials-marker::before,
+.credentials-marker::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 1px solid var(--_colors---brand--deep-navy, #0d2445);
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  animation: credentials-dot-ripple 3.2s ease-out infinite;
+}
+
+.credentials-marker::after {
+  animation-delay: 1.6s;
+}
+
+@keyframes credentials-dot-ripple {
+  0% { opacity: 0.45; transform: scale(1); }
+  70%, 100% { opacity: 0; transform: scale(1.8); }
+}
+
+.credentials-marker[aria-expanded="true"]::before,
+.credentials-marker[aria-expanded="true"]::after {
+  animation: none;
+}
+
+.credentials-marker-label {
+  display: none;
+}
+
+.credentials-country-card:not([data-state="open"]) {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+}
+
+/* Webflow also authors the closed state, so late custom CSS cannot flash
+   a card. Only an explicit interaction reveals it. */
+.credentials-country-card[data-state="open"] {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Bridge the small gap between the dot and the card for pointer travel. */
+.credentials-country-card::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  z-index: -1;
+}
+
+.credentials-marker[aria-pressed="true"] {
+  box-shadow: 0 0 0 5px rgb(217 218 211 / 25%), 0 5px 24px rgb(0 0 0 / 35%);
+}
+
+.credentials-marker:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 5px;
+}
+
+@media (max-width: 767px) {
+  .credentials-marker::before,
+  .credentials-marker::after {
+    display: none;
+  }
+
+  .credentials-map-scene::after {
+    display: none;
+  }
+
+  /* The phone camera has its own contained fade, above the moving map. */
+  .credentials-map-viewport::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(to bottom,
+      var(--_colors---brand--midnight-ink, #101827), transparent 12%, transparent 88%,
+      var(--_colors---brand--midnight-ink, #101827));
+  }
+
+  .credentials-map-viewport:not([data-credentials-camera-ready]) .credentials-map-image {
+    visibility: hidden;
+  }
+
+  .credentials-country-card::before {
+    display: none;
+  }
+
+  .credentials-marker-label {
+    display: inline;
+  }
+
+  .credentials-marker {
+    transition: none;
+  }
+
+  .credentials-marker[aria-selected="true"] {
+    background-color: var(--_colors---brand--soft-stone, #d9dad3);
+    color: var(--_colors---brand--deep-navy, #0d2445);
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .credentials-map-vector [data-credentials-region] {
+    transition: none;
+  }
+
+  .credentials-marker::before,
+  .credentials-marker::after {
+    animation: none;
+  }
+}
+
 /* Map section, narrow. Authored here rather than on Webflow breakpoints
    because 1024 and 560 are deliberate and the Designer's stops are 991 /
    767 / 478 — there is nowhere in the panel to put these.
@@ -828,6 +997,51 @@ html.bio-lock {
     height: auto;
     aspect-ratio: 4 / 5;
   }
+}
+
+/* Credentials collection: runtime states and the sticky-bar fade.
+   Layout, sizes and normal control styles live in Webflow. */
+[data-credentials-list] {
+  scroll-margin-top: 0em;
+}
+
+[data-credentials-list]:not([data-list-ready]) [fs-list-element="empty"] {
+  display: none;
+}
+
+[data-credentials-list] .credentials-filters-bar {
+  top: var(--credentials-sticky-top, 0em);
+}
+
+.credentials-filters-bar::after {
+  content: "";
+  position: absolute;
+  inset: 100% 0 auto;
+  height: 1.5em;
+  background: linear-gradient(to bottom,
+    var(--_colors-semantic---background--page), transparent);
+  pointer-events: none;
+}
+
+.credentials-filter {
+  transition: color 200ms ease, background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+.credentials-filter:has(input:checked),
+.credentials-filter.is-active {
+  background-color: var(--_colors-semantic---button--primary-background);
+  color: var(--_colors-semantic---button--primary-foreground);
+  border-color: var(--_colors-semantic---button--primary-background);
+}
+
+.credentials-filter:has(input:focus-visible) {
+  outline: .125em solid var(--_colors-semantic---text--primary);
+  outline-offset: .25em;
+}
+
+.credentials-filter:hover:not(:has(input:checked)) {
+  border-color: var(--_colors-semantic---text--primary);
 }
 
 /* ============================================================
@@ -1030,6 +1244,7 @@ html.bio-lock {
   }
 
   .map-layer,
+  .credentials-marker,
   .toggle-thumb,
   .toggle-item {
     transition: none !important;

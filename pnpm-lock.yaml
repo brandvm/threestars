@@ -4,10 +4,15 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+pnpmfileChecksum: sha256-h2Kz1i0AlTUKfGiLModV+zPYxf1JxB6Uu2CNEuj8KVY=
+
 importers:
 
   .:
     dependencies:
+      '@finsweet/attributes':
+        specifier: 2.7.1
+        version: 2.7.1
       lenis:
         specifier: ^1.3.26
         version: 1.3.26
@@ -176,6 +181,9 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@finsweet/attributes@2.7.1':
+    resolution: {integrity: sha512-AlniV6g+jtpBp3cXQN0yEEmUerR1sEKUzHh6jS6rc5qAEyNkcp9F7J9MTjxY9pB+U1+qsuNnNIlHBSp1AJbUEg==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -400,6 +408,8 @@ snapshots:
 
   '@esbuild/win32-x64@0.28.2':
     optional: true
+
+  '@finsweet/attributes@2.7.1': {}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true

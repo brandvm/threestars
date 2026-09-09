@@ -1,5 +1,9 @@
 import { initBioModal } from "./modules/bio-modal";
 import { initClock } from "./modules/clock";
+import { initContactForm } from "./modules/contact-form";
+import { initHomePreloader } from "./modules/home-preloader";
+import { initCredentialsMap } from "./modules/credentials-map";
+import { initCredentialsList } from "./modules/credentials-list";
 import { initParallax } from "./modules/parallax";
 import { initRegionMap } from "./modules/region-map";
 import { initSmoothScroll } from "./modules/smooth-scroll";
@@ -11,9 +15,12 @@ const lenis = initSmoothScroll();
 
 initClock();
 initYear();
+initContactForm();
 initRegionMap();
+initCredentialsMap(lenis);
+initCredentialsList();
 initParallax(lenis);
 initBioModal(lenis);
 
-// Release the pre-paint scroll lock set by the head bootstrap.
-document.documentElement.classList.remove("is-loading");
+// The homepage intro owns the lock until its reveal; other pages release now.
+initHomePreloader(lenis);

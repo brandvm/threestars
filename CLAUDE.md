@@ -4,6 +4,10 @@ Webflow site. Design tokens live in Webflow Variables; custom CSS/JS ship
 from this repo through a CDN. The Designer owns layout and classes; this
 repo owns tokens-as-CSS, resets, utilities, and JS-paired styles.
 
+Use `em`, not `rem`, for authored layout and typography sizes. Preserve
+existing variables and user edits. SVG coordinates and measured camera
+transforms retain their native units.
+
 ## Commands
 
     pnpm dev      # esbuild watch + server on :3000 (unminified, sourcemaps)
@@ -105,6 +109,9 @@ Worked around, not fixed. Do not rediscover these:
   inside a component
 - Concurrent Designer edits change element ids mid-operation. Re-query on
   "Element not found" rather than assuming deletion
+- Read responsive styles with `get_styles` → `include_breakpoints:
+  ["xxl", "xl", "large", "medium", "small", "tiny"]`. Without this array,
+  only base properties are returned. `breakpoint_id` is for updates only
 
 ## Token architecture
 
@@ -124,7 +131,8 @@ Both ends of a transition must come from the same family or it snaps.
 
 ## Open decisions
 
-- **Layout `em` → `rem`.** Fixes the 6.25% shortfall; numbers stay identical
+- **Layout em sizing.** Keep the user's `em` convention; account for the
+  element's inherited font size when matching design dimensions
 - `Nav/Height` is 6.5em at Mobile L but 4.8125em at Tablet/Phone — the topbar
   is hidden at all three, so Mobile L looks missed
 - `--nav-h: 6rem` is a third source of truth against `Nav/Height`; it drives
