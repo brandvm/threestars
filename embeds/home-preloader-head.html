@@ -1,0 +1,50 @@
+<!-- Homepage only. Page Settings → Custom Code → Inside head.
+     Critical first-paint state lives here; animation lives in the bundle. -->
+<style>
+  .home-preloader {
+    display: none;
+  }
+  html.has-home-preloader .home-preloader {
+    display: grid;
+    place-items: center;
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    background: var(--_colors---brand--midnight-ink, #101827);
+    color: var(--_colors---brand--soft-stone, #dadad2);
+  }
+  html.has-home-preloader,
+  html.has-home-preloader body {
+    overflow: hidden;
+  }
+  .home-preloader svg {
+    width: min(30em, 84vw);
+    height: auto;
+    overflow: visible;
+  }
+  [data-preloader-wordmark],
+  [data-preloader-subtitle] {
+    color: var(--_colors---brand--white, #f7f7f2);
+  }
+  [data-preloader-symbol],
+  [data-preloader-letter],
+  [data-preloader-subtitle] {
+    opacity: 0;
+  }
+</style>
+<script>
+  (function () {
+    var root = document.documentElement;
+    if (root.dataset.wfPage !== '6a97103f40ea05346a443227' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    try {
+      if (sessionStorage.getItem('ts-home-intro-seen') === '1') return;
+    } catch (e) {}
+    root.classList.add('has-home-preloader');
+    // Starts immediately, even if the bundle or another resource never loads.
+    setTimeout(function () {
+      if (!root.classList.contains('has-home-preloader')) return;
+      root.classList.remove('has-home-preloader', 'is-loading');
+      document.dispatchEvent(new Event('ts:preloader-timeout'));
+    }, 9000);
+  })();
+</script>

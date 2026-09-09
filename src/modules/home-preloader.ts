@@ -1,10 +1,10 @@
 import type Lenis from 'lenis';
 
-/** The homepage-only embed establishes first-paint state before Page Wrapper.
+/** The homepage head bootstrap establishes first-paint state before Page Wrapper.
  * Its independent timeout also releases the page if the bundle fails. */
 export function initHomePreloader(lenis?: Lenis): void {
   const root = document.documentElement;
-  const overlay = document.querySelector<HTMLElement>('[data-home-preloader]');
+  const overlay = document.querySelector<HTMLElement>('.home-preloader, [data-home-preloader]');
   if (!overlay || !root.classList.contains('has-home-preloader')) {
     root.classList.remove('is-loading');
     return;

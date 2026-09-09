@@ -209,21 +209,27 @@ When upgrading, review that hook and the pinned distribution import path.
 ## Homepage preloader
 
 `G | Home Preloader` is the first component on Home, before Page Wrapper.
-Its native Embed is mirrored in `embeds/home-preloader.html`; copy that file
-into the Embed when changing its markup or critical first-paint styles.
+Its component root uses the native `Home Preloader` class with `display: none`
+and directly contains the SVG Custom Elements (svg, groups and paths).
+There is no inner Div or Embed. `embeds/home-preloader.html` is the reference markup for
+rebuilding that native tree. Styles and bootstrap are in the homepage's
+head custom code, mirrored in `embeds/home-preloader-head.html`.
+Update the native tree or homepage head code when changing the corresponding file.
 It reuses the navigation logo's SVG paths, with individually grouped letters.
 
 `src/modules/home-preloader.ts` runs the 5.2-second sequence and releases
 Lenis and keyboard interaction when it finishes. The homepage ID guards the
 bootstrap, and `sessionStorage` key `ts-home-intro-seen` skips repeat visits
-within the tab session. Reduced motion skips the intro. The Embed has an
-independent 9-second timeout if the bundle fails, and remains hidden in Designer.
+within the tab session. Reduced motion skips the intro. The head bootstrap has an
+independent 9-second timeout if the bundle fails. The markup stays hidden in
+Designer through its native class, where page head code does not run, with no
+Embed warning. On published Home, the head rule overrides that class to show it.
 Letters overlap with 1-second fade/rise animations staggered by 110ms;
 the final reveal uses a gradual 1-second fade.
 
 To replay while testing, clear `ts-home-intro-seen` from session storage and
-reload Home. Ship the updated bundle alongside the Webflow component; the
-component alone can only show the initial background and timeout.
+reload Home. Ship the updated bundle alongside the Webflow component and page
+head code. Without the bundle, the head bootstrap reveals the page on timeout.
 
 ## Contact form
 
@@ -244,3 +250,18 @@ Office addresses, hours and the optional map retain the design placeholders.
 Designer gotchas that have already cost time, and the open decisions
 still outstanding. It is worth reading before making a change to either
 the tokens or the loader.
+
+## Navigation anchors
+
+Navigation destinations are saved directly in Webflow as page-and-fragment URLs.
+About uses `our-story`, `our-approach`, and `leadership-team` on its section elements.
+Services uses a persistent ID on each existing Service List Item wrapper:
+`real-estate-debt-arranging`, `equity-raising-liquidity-sourcing`,
+`debt-restructuring-workout`, `structured-debt-advisory`,
+`mezzanine-debt-arranging`, and `real-estate-agency`.
+Press uses `coverage-and-commentary` on its coverage section; the featured
+navigation cards also lead to that section.
+
+`navigation.ts` manages dropdowns, mobile menu state, focus, and scroll locking.
+It does not create target IDs, rewrite link URLs, or intercept anchor scrolling.
+Keep section IDs and saved navigation URLs in sync when changing destinations.

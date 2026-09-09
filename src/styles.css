@@ -705,6 +705,55 @@ html.bio-lock {
   animation-direction: reverse;
 }
 
+/* Navigation disclosure states. Layout classes remain authored in Webflow. */
+.nav-disclosure[data-nav-dropdown="press"] { position: static; }
+.nav-disclosure { padding-block: 1em; margin-block: -1em; }
+.nav-disclosure[data-open] > .nav-panel { display: block; animation: nav-panel-in 220ms ease both; }
+.nav-disclosure[data-open] > .nav-press-panel { display: grid; }
+.nav-chevron { transition: transform 220ms ease; }
+[data-open] > .nav-trigger .nav-chevron { transform: rotate(180deg); }
+.nav-submenu-link:hover, .nav-submenu-link:focus-visible {
+  background: var(--_colors---brand--deep-navy);
+}
+.nav-featured-card:hover .press-card-title { text-decoration: underline; text-underline-offset: .2em; }
+.nav-panel .meta { color: var(--_colors---warm-white-tint--warm-white-65); }
+.nav-toggle { border: 0; padding: 0; }
+.nav-toggle svg { width: 1.25em; height: 1.25em; }
+.nav-toggle [data-nav-close-line] { opacity: 0; }
+.nav-w[data-menu-open] [data-nav-menu-line] { opacity: 0; }
+.nav-w[data-menu-open] [data-nav-close-line] { opacity: 1; }
+html.is-nav-open, html.is-nav-open body { overflow: hidden; }
+@keyframes nav-panel-in { from { opacity: 0; transform: translateY(.35em); } to { opacity: 1; transform: translateY(0em); } }
+@media (max-width: 991px) {
+  .nav-w[data-menu-open] { position: fixed; inset: 0; height: 100dvh; background: var(--_colors---brand--deep-navy); z-index: 1000; }
+  .nav-w[data-menu-open] .nav-bar { background: var(--_colors---brand--deep-navy); color: var(--_colors---brand--warm-white); border-color: var(--_colors---warm-white-tint--warm-white-18); }
+  .nav-w[data-menu-open] .nav-toggle { color: inherit; background: var(--_colors---warm-white-tint--warm-white-15); border-radius: 50%; }
+  .nav-w[data-menu-open] .nav-links {
+    display: flex; position: fixed; inset: var(--nav-menu-top, 5em) 0 0;
+    padding: 1em 1.25em max(1.5em, env(safe-area-inset-bottom));
+    flex-direction: column; align-items: stretch; gap: 2em;
+    overflow-y: auto; overscroll-behavior: contain;
+    background: var(--_colors---brand--deep-navy); color: var(--_colors---brand--warm-white);
+  }
+  .nav-items { flex-direction: column; align-items: stretch; width: 100%; gap: 0; }
+  .nav-items > li { width: 100%; border-bottom: .0625em solid var(--_colors---warm-white-tint--warm-white-18); }
+  .nav-items .nav-link { width: 100%; justify-content: space-between; padding: 1.25em .5em; color: inherit; }
+  .nav-disclosure { margin: 0; padding: 0; }
+  .nav-panel, .nav-panel.nav-press-panel { position: static; width: 100%; min-width: 0; max-width: none; border: 0; padding: .5em; }
+  .nav-disclosure[data-open] > .nav-press-panel { display: block; }
+  .nav-panel .nav-featured-card { display: none; }
+  .nav-submenu-link { text-transform: none; font-size: 1em; padding: .875em; }
+  .nav-w[data-menu-open] .nav-links > .button-link {
+    margin-top: auto; width: 100%; flex: none;
+    background: var(--_colors---brand--soft-stone); color: var(--_colors---brand--deep-navy);
+    justify-content: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-disclosure[data-open] > .nav-panel { animation: none; }
+  .nav-chevron { transition: none; }
+}
+
 /* Press card — the whole card is the click target, but only the headline
    carries the anchor. A stretched ::after does the widening, which keeps
    the accessible name to the headline alone rather than the card's entire

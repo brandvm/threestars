@@ -2,6 +2,7 @@ import { initBioModal } from "./modules/bio-modal";
 import { initClock } from "./modules/clock";
 import { initContactForm } from "./modules/contact-form";
 import { initHomePreloader } from "./modules/home-preloader";
+import { initNavigation } from "./modules/navigation";
 import { initCredentialsMap } from "./modules/credentials-map";
 import { initCredentialsList } from "./modules/credentials-list";
 import { initParallax } from "./modules/parallax";
@@ -21,6 +22,7 @@ initCredentialsMap(lenis);
 initCredentialsList();
 initParallax(lenis);
 initBioModal(lenis);
+initNavigation(lenis);
 
 // The homepage intro owns the lock until its reveal; other pages release now.
 initHomePreloader(lenis);
