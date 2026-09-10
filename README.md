@@ -267,7 +267,8 @@ Services uses a persistent ID on each existing Service List Item wrapper:
 `debt-restructuring-workout`, `structured-debt-advisory`,
 `mezzanine-debt-arranging`, and `real-estate-agency`.
 Press uses `coverage-and-commentary` on its coverage section; the featured
-navigation cards also lead to that section.
+navigation cards also lead to that section. The Interviews & video submenu
+links to `/press-overview#interviews`.
 
 `navigation.ts` manages dropdowns, mobile menu state, focus, and scroll locking.
 It does not create target IDs, rewrite link URLs, or intercept anchor scrolling.
@@ -299,6 +300,28 @@ adding URLs requires restoring the element's visibility, preferably with a
 native CMS condition so empty profiles stay hidden.
 See the [link repair record](audits/link-fixes-2026-09-10.md) for source URLs
 and remaining content work.
+
+## Press interviews
+
+The native `#interviews` section follows the coverage list on the Press page.
+It matches the supplied Figma reference with four `E | Interview Card`
+instances, the existing Press thumbnail, a two-column desktop grid, and a
+single column below 768px. Section, container, typography and button styles
+reuse the existing Webflow design system.
+
+Edit each card's **Thumbnail**, **Thumbnail Alt**, **Interview Title**,
+**Publisher**, **Date**, and **Video URL** properties in Designer. Keep the
+URL empty until the original interview is confirmed. `interviews.ts` makes
+empty or invalid URLs inactive; a full HTTP(S) URL enables the card and opens
+the original platform in a new tab. The four current cards are explicitly
+marked `[TBC]` and do not link to fabricated videos.
+
+Duplicate card instances inside **Interviews Grid** to add interviews.
+The script shows four at a time, enables **Show More** when additional cards
+exist, and moves keyboard focus to the newly revealed content. With only
+the four placeholders, the reference button remains visible and disabled.
+Only link/disclosure behavior and its accessibility styles live in this repo;
+the section, images, content and responsive layout remain native Webflow.
 
 ## Legal pages
 
