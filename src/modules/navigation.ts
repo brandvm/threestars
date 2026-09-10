@@ -7,11 +7,15 @@ export function initNavigation(lenis?: Lenis): void {
   if (!nav || !menu || !toggle || nav.dataset.navigationReady) return;
   nav.dataset.navigationReady = 'true';
   const mobile = matchMedia('(max-width: 991px)');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const hover = matchMedia('(hover: hover) and (pointer: fine)');
   const groups = Array.from(nav.querySelectorAll<HTMLElement>('[data-nav-dropdown]'));
   const inertStates = new Map<HTMLElement, boolean>();
   let opened = false;
+  let visible = false;
   let closeTimer: ReturnType<typeof setTimeout>;
+  let menuCloseTimer: ReturnType<typeof setTimeout>;
+  menu.inert = mobile.matches;
 
   function setGroup(group?: HTMLElement) {
     groups.forEach(item => {
@@ -20,21 +24,50 @@ export function initNavigation(lenis?: Lenis): void {
       item.querySelector('[data-nav-trigger]')?.setAttribute('aria-expanded', String(active));
     });
   }
-  function setOpen(next: boolean, restoreFocus = false) {
-    opened = next && mobile.matches;
-    nav!.toggleAttribute('data-menu-open', opened);
-    if (opened) nav!.style.setProperty('--nav-menu-top', `${nav!.querySelector('.nav-bar')!.getBoundingClientRect().bottom}px`);
-    document.documentElement.classList.toggle('is-nav-open', opened);
+  function updateMenuTop() {
+    if (visible) nav!.style.setProperty('--nav-menu-top', `${nav!.querySelector('.nav-bar')!.getBoundingClientRect().bottom}px`);
+  }
+  function finishClose() {
+    if (opened) return;
+    clearTimeout(menuCloseTimer);
+    const wasVisible = visible;
+    visible = false;
+    nav!.removeAttribute('data-menu-visible');
+    document.documentElement.classList.remove('is-nav-open');
+    menu!.inert = mobile.matches;
+    setGroup();
+    inertStates.forEach((value, element) => { element.inert = value; });
+    inertStates.clear();
+    if (wasVisible) lenis?.start();
+  }
+  function setOpen(next: boolean, restoreFocus = false, immediate = false) {
+    next = next && mobile.matches;
+    clearTimeout(menuCloseTimer);
+    clearTimeout(closeTimer);
+    opened = next;
     toggle!.setAttribute('aria-expanded', String(opened));
     toggle!.setAttribute('aria-label', opened ? 'Close menu' : 'Open menu');
-    setGroup();
     if (opened) {
+      const wasVisible = visible;
+      visible = true;
+      nav!.setAttribute('data-menu-visible', '');
+      document.documentElement.classList.add('is-nav-open');
+      menu!.inert = false;
+      updateMenuTop();
+      if (!wasVisible) {
+        setGroup();
+        menu!.scrollTop = 0;
+        // Establish the displayed, transparent state before transitioning in.
+        void menu!.offsetHeight;
+      }
+      nav!.setAttribute('data-menu-open', '');
       lenis?.stop();
       let branch: HTMLElement = nav!;
       while (branch.parentElement) {
         Array.from(branch.parentElement.children).forEach(sibling => {
           if (sibling !== branch && sibling instanceof HTMLElement && !['SCRIPT', 'STYLE', 'LINK'].includes(sibling.tagName)) {
-            inertStates.set(sibling, sibling.inert);
+            // Reopening during the exit must preserve the original states.
+            if (!inertStates.has(sibling)) inertStates.set(sibling, sibling.inert);
             sibling.inert = true;
           }
         });
@@ -42,12 +75,22 @@ export function initNavigation(lenis?: Lenis): void {
         if (branch === document.body) break;
       }
     } else {
-      inertStates.forEach((value, element) => { element.inert = value; });
-      inertStates.clear();
-      lenis?.start();
-      if (restoreFocus) toggle!.focus();
+      nav!.removeAttribute('data-menu-open');
+      if (restoreFocus || (mobile.matches && menu!.contains(document.activeElement))) toggle!.focus({ preventScroll: true });
+      menu!.inert = mobile.matches;
+      if (!visible || immediate || reducedMotion.matches) {
+        finishClose();
+      } else {
+        // CSS declares this token in milliseconds. The fallback also handles
+        // interrupted transitions and a second tap before the first paint.
+        const duration = parseFloat(getComputedStyle(nav!).getPropertyValue('--nav-menu-duration')) || 240;
+        menuCloseTimer = setTimeout(finishClose, duration + 80);
+      }
     }
   }
+  menu.addEventListener('transitionend', event => {
+    if (event.target === menu && event.propertyName === 'opacity' && !opened) finishClose();
+  });
   toggle.addEventListener('click', event => { event.preventDefault(); setOpen(!opened); });
   toggle.addEventListener('keydown', event => {
     if (toggle.tagName !== 'BUTTON' && (event.key === ' ' || event.key === 'Enter')) {
@@ -92,22 +135,26 @@ export function initNavigation(lenis?: Lenis): void {
       else if (opened) setOpen(false, true);
       event.preventDefault();
     }
-    if (opened && event.key === 'Tab') {
-      const elements = Array.from(nav.querySelectorAll<HTMLElement>('a[href],button,[tabindex="0"]')).filter(el => el.getClientRects().length > 0);
+    if (visible && event.key === 'Tab') {
+      const elements = Array.from(nav.querySelectorAll<HTMLElement>('a[href],button,[tabindex="0"]')).filter(el => !el.closest('[inert]') && el.getClientRects().length > 0);
       const first = elements[0], last = elements[elements.length - 1];
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     }
   });
-  mobile.addEventListener('change', () => { clearTimeout(closeTimer); setOpen(false); });
-  window.addEventListener('pagehide', () => setOpen(false));
+  mobile.addEventListener('change', () => setOpen(false, false, true));
+  reducedMotion.addEventListener('change', () => {
+    if (reducedMotion.matches && visible && !opened) finishClose();
+  });
+  window.addEventListener('resize', updateMenuTop);
+  window.addEventListener('pagehide', () => setOpen(false, false, true));
 
   nav.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(link => {
     link.addEventListener('click', event => {
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
-      if (opened) setOpen(false);
+      // Release scroll and inert immediately so same-page anchors can navigate.
+      if (visible) setOpen(false, false, true);
       setGroup();
-
     });
   });
 }

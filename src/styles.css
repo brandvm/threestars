@@ -719,21 +719,60 @@ html.bio-lock {
 .nav-panel .meta { color: var(--_colors---warm-white-tint--warm-white-65); }
 .nav-toggle { border: 0; padding: 0; }
 .nav-toggle svg { width: 1.25em; height: 1.25em; }
-.nav-toggle [data-nav-close-line] { opacity: 0; }
-.nav-w[data-menu-open] [data-nav-menu-line] { opacity: 0; }
-.nav-w[data-menu-open] [data-nav-close-line] { opacity: 1; }
+.nav-toggle [data-nav-menu-line], .nav-toggle [data-nav-close-line] {
+  transform-origin: center;
+  transform-box: view-box;
+  transition: opacity 180ms ease, transform var(--dur-ui) var(--ease-bbs);
+}
+.nav-toggle [data-nav-close-line] { opacity: 0; transform: rotate(-45deg) scale(.75); }
+.nav-w[data-menu-open] [data-nav-menu-line] { opacity: 0; transform: rotate(45deg) scale(.75); }
+.nav-w[data-menu-open] [data-nav-close-line] { opacity: 1; transform: rotate(0deg) scale(1); }
 html.is-nav-open, html.is-nav-open body { overflow: hidden; }
 @keyframes nav-panel-in { from { opacity: 0; transform: translateY(.35em); } to { opacity: 1; transform: translateY(0em); } }
 @media (max-width: 991px) {
-  .nav-w[data-menu-open] { position: fixed; inset: 0; height: 100dvh; background: var(--_colors---brand--deep-navy); z-index: 1000; }
+  /* Keep the header in flow so opening does not shift the page underneath.
+     The visible state persists through the exit before JS releases the lock. */
+  .nav-w { --nav-menu-duration: 240ms; }
+  .nav-w[data-menu-visible] { position: relative; inset: auto; height: auto; background: transparent; z-index: 1000; }
+  .nav-w::before {
+    content: ""; position: fixed; inset: 0; z-index: -1;
+    background: var(--_colors---brand--deep-navy);
+    opacity: 0; pointer-events: none;
+    transition: opacity var(--nav-menu-duration) ease;
+  }
+  .nav-w[data-menu-open] { --nav-menu-duration: var(--dur-ui); }
+  .nav-w[data-menu-open]::before { opacity: 1; }
+  .nav-bar, .nav-toggle {
+    transition: background-color var(--nav-menu-duration) ease,
+      color var(--nav-menu-duration) ease, border-color var(--nav-menu-duration) ease;
+  }
   .nav-w[data-menu-open] .nav-bar { background: var(--_colors---brand--deep-navy); color: var(--_colors---brand--warm-white); border-color: var(--_colors---warm-white-tint--warm-white-18); }
+  .nav-toggle { border-radius: 50%; }
   .nav-w[data-menu-open] .nav-toggle { color: inherit; background: var(--_colors---warm-white-tint--warm-white-15); border-radius: 50%; }
-  .nav-w[data-menu-open] .nav-links {
+  .nav-w[data-menu-visible] .nav-links {
     display: flex; position: fixed; inset: var(--nav-menu-top, 5em) 0 0;
     padding: 1em 1.25em max(1.5em, env(safe-area-inset-bottom));
     flex-direction: column; align-items: stretch; gap: 2em;
     overflow-y: auto; overscroll-behavior: contain;
-    background: var(--_colors---brand--deep-navy); color: var(--_colors---brand--warm-white);
+    background: transparent; color: var(--_colors---brand--warm-white);
+    opacity: 0; transform: translateY(-.75em); pointer-events: none;
+    transition: opacity var(--nav-menu-duration) ease,
+      transform var(--nav-menu-duration) var(--ease-bbs);
+  }
+  .nav-w[data-menu-open] .nav-links { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .nav-items > li, .nav-links > .button-link {
+    opacity: 0; transform: translateY(.75em);
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+  .nav-items > li:nth-child(1) { --nav-item-delay: 60ms; }
+  .nav-items > li:nth-child(2) { --nav-item-delay: 100ms; }
+  .nav-items > li:nth-child(3) { --nav-item-delay: 140ms; }
+  .nav-items > li:nth-child(4) { --nav-item-delay: 180ms; }
+  .nav-links > .button-link { --nav-item-delay: 220ms; }
+  .nav-w[data-menu-open] .nav-items > li, .nav-w[data-menu-open] .nav-links > .button-link {
+    opacity: 1; transform: translateY(0);
+    transition: opacity var(--dur-ui) ease var(--nav-item-delay, 60ms),
+      transform var(--dur-ui) var(--ease-bbs) var(--nav-item-delay, 60ms);
   }
   .nav-items { flex-direction: column; align-items: stretch; width: 100%; gap: 0; }
   .nav-items > li { width: 100%; border-bottom: .0625em solid var(--_colors---warm-white-tint--warm-white-18); }
@@ -743,7 +782,7 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
   .nav-disclosure[data-open] > .nav-press-panel { display: block; }
   .nav-panel .nav-featured-card { display: none; }
   .nav-submenu-link { text-transform: none; font-size: 1em; padding: .875em; }
-  .nav-w[data-menu-open] .nav-links > .button-link {
+  .nav-w[data-menu-visible] .nav-links > .button-link {
     margin-top: auto; width: 100%; flex: none;
     background: var(--_colors---brand--soft-stone); color: var(--_colors---brand--deep-navy);
     justify-content: center;
@@ -751,7 +790,13 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nav-disclosure[data-open] > .nav-panel { animation: none; }
-  .nav-chevron { transition: none; }
+  .nav-chevron, .nav-w::before, .nav-bar, .nav-toggle,
+  .nav-toggle [data-nav-menu-line], .nav-toggle [data-nav-close-line],
+  .nav-w[data-menu-visible] .nav-links,
+  .nav-items > li, .nav-links > .button-link,
+  .nav-w[data-menu-open] .nav-items > li, .nav-w[data-menu-open] .nav-links > .button-link {
+    transition: none;
+  }
 }
 
 /* Press card — the whole card is the click target, but only the headline

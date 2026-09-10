@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-10",
+  "siteId": "6a97103d40ea05346a443224",
+  "assetFolder": "Used in Figma / Press",
+  "collectionId": "6a98e370733a6b15e1a965d4",
+  "files": [
+    {
+      "sourceUrl": "https://static.wixstatic.com/ugd/c782c9_41dc9370ca8c4557a9e09d73f8b8ff76.pdf",
+      "webflowUrl": "https://cdn.prod.website-files.com/6a97103d40ea05346a443224/6aa2ee303afb8defb1f2aa53_press-apollo-rome-debut-react-news.pdf",
+      "assetId": "6aa2ee303afb8defb1f2aa53",
+      "fileName": "press-apollo-rome-debut-react-news.pdf",
+      "folderId": "6a9af610299169b3fad65547",
+      "cmsItems": [
+        {
+          "id": "6a9afb579fd9711628709904",
+          "slug": "apollo-rome-debut-archive"
+        },
+        {
+          "id": "6a98e425935a4e087d62e0d4",
+          "slug": "apollo-rome-debut"
+        }
+      ]
+    },
+    {
+      "sourceUrl": "https://static.wixstatic.com/ugd/c782c9_1bc4a233b0cc4fd0b7f2ac2e388ec8a7.pdf",
+      "webflowUrl": "https://cdn.prod.website-files.com/6a97103d40ea05346a443224/6aa2ee77ec022b0c3c5a11bf_press-italian-icon-refinancing-real-estate-capital.pdf",
+      "assetId": "6aa2ee77ec022b0c3c5a11bf",
+      "fileName": "press-italian-icon-refinancing-real-estate-capital.pdf",
+      "folderId": "6a9af610299169b3fad65547",
+      "cmsItems": [
+        {
+          "id": "6a9afb579fd9711628709906",
+          "slug": "italian-icon-refinancing-archive"
+        },
+        {
+          "id": "6a98e425935a4e087d62e0d6",
+          "slug": "italian-icon-refinancing"
+        }
+      ]
+    },
+    {
+      "sourceUrl": "https://static.wixstatic.com/ugd/c782c9_9db82d8f79184fd7ac80ab5795d39bd6.pdf",
+      "webflowUrl": "https://cdn.prod.website-files.com/6a97103d40ea05346a443224/6aa2ee78ec022b0c3c5a11de_press-return-of-italy-debt-play-real-estate-capital.pdf",
+      "assetId": "6aa2ee78ec022b0c3c5a11de",
+      "fileName": "press-return-of-italy-debt-play-real-estate-capital.pdf",
+      "folderId": "6a9af610299169b3fad65547",
+      "cmsItems": [
+        {
+          "id": "6a9afb579fd9711628709908",
+          "slug": "italy-debt-play-archive"
+        },
+        {
+          "id": "6a9afb579fd9711628709902",
+          "slug": "italy-debt-play"
+        }
+      ]
+    },
+    {
+      "sourceUrl": "https://static.wixstatic.com/ugd/c782c9_e6938150789a4721a5c0c9113864e6f6.pdf",
+      "webflowUrl": "https://cdn.prod.website-files.com/6a97103d40ea05346a443224/6aa2ee78503e0d5cf3e71bc9_press-rome-hotel-financing-globalcapital.pdf",
+      "assetId": "6aa2ee78503e0d5cf3e71bc9",
+      "fileName": "press-rome-hotel-financing-globalcapital.pdf",
+      "folderId": "6a9af610299169b3fad65547",
+      "cmsItems": [
+        {
+          "id": "6a98e425935a4e087d62e0d8",
+          "slug": "rome-edition-financing"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "allUploadsHTTP201": true,
+    "allWebflowFilesHTTP200": true,
+    "allFilesByteIdenticalToFreshWixDownloads": true,
+    "updatedAndPublishedCMSItems": 7,
+    "successfulPageResponsesScanned": 14,
+    "linkedStylesheetsScanned": 3,
+    "cmsCollectionsScanned": 4,
+    "remainingWixFileReferences": 0
+  }
+}

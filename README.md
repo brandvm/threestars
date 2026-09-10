@@ -242,7 +242,14 @@ The current MCP cannot set native placeholders or select choices.
 pipe-separated `data-contact-subject` choices on the native select.
 Edit those attributes in Designer to change the copy. The section's
 `contact-form` ID is the destination of the hero’s Send a Message link.
-Office addresses, hours and the optional map retain the design placeholders.
+The Milan office is at Via San Pietro all'Orto 17, 20121 Milan, Italy,
+confirmed against the company website and its primary LinkedIn location.
+The existing `Contact Map` block contains a native iframe with the
+`Contact Map Frame` class, embedding Google Maps pinned to that address.
+It fills the existing rounded 16.25em map area, loads lazily, and has a
+descriptive frame title. Edit its `src` attribute in `S | Contact` to change
+the location; no repository script or API key is required. New York's address
+and office hours still retain their design placeholders.
 
 ## Further reading
 
@@ -265,3 +272,57 @@ navigation cards also lead to that section.
 `navigation.ts` manages dropdowns, mobile menu state, focus, and scroll locking.
 It does not create target IDs, rewrite link URLs, or intercept anchor scrolling.
 Keep section IDs and saved navigation URLs in sync when changing destinations.
+
+The mobile menu fades and slides in with staggered links and an animated
+menu/close icon. It uses the existing `--dur-ui` / `--ease-bbs` motion tokens,
+with a shorter 240ms exit. `data-menu-visible` keeps the overlay mounted during
+closing; `data-menu-open` controls the target visual state. The header stays in
+document flow to avoid shifting the page. Scroll locking and background inert
+states persist until the exit finishes, while navigation, desktop resizing, and
+reduced-motion preferences close immediately. Rapid reopening preserves the
+original inert states. These JS-paired styles live in `src/styles.css`.
+
+Homepage service cards use those same Services section URLs. The shared footer
+targets the About approach section, Credentials and its `sectors` section,
+Contact's `milan-office`, `new-york-office`, and `contact-form` blocks, and
+the existing Code of Ethics PDF. Hero credential buttons target `/credentials`;
+About's team button targets `/about#leadership-team`.
+
+Press CMS `article-url` values link to the original publication PDFs hosted
+in Webflow's `Used in Figma / Press` asset folder. All four PDFs were copied
+from Wix, checked byte-for-byte, and published across the seven Press entries.
+The [migration manifest](audits/wix-file-migration-2026-09-10.json) records the
+original URLs, current Webflow URLs, asset IDs, and affected CMS items.
+The team biographies' office links target the Contact office anchors. Their
+LinkedIn element is currently hidden because the People profile URLs are empty;
+adding URLs requires restoring the element's visibility, preferably with a
+native CMS condition so empty profiles stay hidden.
+See the [link repair record](audits/link-fixes-2026-09-10.md) for source URLs
+and remaining content work.
+
+## Legal pages
+
+The existing `/privacy-policy`, `/cookie-policy`, `/terms`, and `/disclaimer`
+pages use `G | Components` and `Page Wrapper`, with `S | Hero SM` and a
+page-specific legal section in the `G | Main` slot. Legal text is native
+Webflow headings, paragraphs, lists, and links; edit it in the corresponding
+`S | Privacy Policy`, `S | Cookie Policy`, `S | Terms of Use`, or
+`S | Disclaimer Notice` component. No JavaScript generates policy content.
+
+The privacy page preserves the supplied seven-page Italian Privacy Policy,
+including its 4 May 2020 publication line and cookie information. The other
+three sections contain visibly marked draft placeholders pending approved
+content. The draft cookie inventory is incomplete; the session-storage
+description reflects the homepage preloader documented above.
+
+Native `Legal Content`, `Legal Copy`, `Legal List`, and `Legal Link` classes
+provide reading width, paragraph spacing, list indentation, and underlines.
+They reuse the existing section containers and `D3` / `D4` heading styles.
+
+## 404 page
+
+Webflow's native 404 utility page reuses `G | Components`, `G | Nav W`,
+`S | Hero SM`, and `G | Footer`, inside the existing page and main wrapper
+classes. Its hero instance contains the error copy and recovery links:
+`Back to Home` points to `/`, and `Contact Us` points to `/contact`.
+Edit those instance properties in Designer; no custom script handles errors.
