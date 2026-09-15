@@ -140,10 +140,17 @@ Both ends of a transition must come from the same family or it snaps.
 - **`VER = "X.Y.Z"` in `loader.html`, and the repo has zero git tags.** Prod
   CSS and JS both 404 the moment a custom domain is attached. Cheapest fix,
   highest consequence
-- **Press CMS is placeholder data.** All seven items have
-  `article-url = https://example.com`, so every card links nowhere. "The
-  return of Italy's debt play" also exists twice — 2019 and 2021, different
-  slugs, same image. Blocks a real launch, not staging
+- **Press CMS: images and link durability.** The duplicate `(archive)` items
+  are gone and all ten items carry real article URLs, but two things are
+  open. Six of the ten use `press-card-generic.webp` — Investcorp, Hotel
+  Danieli, RiverRock, both Finance Community items and Eden Hotel need real
+  images. And every PDF link now points at `threestarscp.com/_files/ugd/…`,
+  which is the **old Wix site**; four of those PDFs are already re-hosted on
+  Webflow's CDN and the rest are not. Decommissioning Wix breaks all of them
+- **Two Press items share one article URL.** Both Finance Community cards
+  point at `financecommunity.it/credit-suisse-60-milioni-la-forgiatura/`,
+  as annotated in Figma, but the Svim San Babila placement is a different
+  article. Its real URL is still needed
 - **`.eyebrow` and `.meta` fail AA.** Both resolve to `Text/Tertiary` →
   `Navy Tint/Navy 55`, which composites to ≈3.7:1 on `Background/Page`
   where AA wants 4.5:1. Neither qualifies for the large-text exemption:

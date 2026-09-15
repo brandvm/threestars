@@ -301,6 +301,44 @@ native CMS condition so empty profiles stay hidden.
 See the [link repair record](audits/link-fixes-2026-09-10.md) for source URLs
 and remaining content work.
 
+## Press coverage list
+
+The `#coverage-and-commentary` section on the Press page is a native Webflow
+Collection List over the Press collection, filtered by year. It was a
+four-across horizontal scroller; the `is-horz-scroll` combo is off all three
+list elements now, so `.press-list` renders its own four-column grid, with
+the narrow-screen columns in this repo because the combo never had any.
+
+`press-list.ts` starts the same pinned Finsweet Attributes v2 List build the
+mandates list uses, with `fs-list-instance="press"` scoping the controls.
+Keep `data-press-list` on the outer section: the module finds everything
+from there.
+
+Year pills filter on the card's **date text**, not a separate year field.
+The date element inside `E | Press Card` carries `fs-list-field="date"`, and
+each pill pairs `fs-list-value="2022"` with `fs-list-operator="contains"`.
+This is why a partial date still filters correctly — "Autumn 2021" contains
+2021. **Adding coverage from a new year needs a new pill**; nothing derives
+them. Duplicate a pill, change its label, `fs-list-value`, `data-year-filter`
+and `id`. The "All years" pill is an empty `fs-list-value`, which clears the
+filter rather than matching anything.
+
+The pills deliberately reuse the `Credentials Filter` class. The two filter
+bars are the same control, so the active, hover and focus rules in §05 cover
+both; only the `is-year-filter` combo is Press-specific.
+
+**Date Label** is an optional CMS field for coverage dated more loosely than
+a date field allows — a quarterly running as "Autumn 2021", a monthly that
+prints only its month. It reaches the page through a hidden bound block
+inside each collection item (`data-press-date-label`), because a Webflow
+collection item cannot take a CMS-bound custom attribute. `press-list.ts`
+copies it over `[data-press-date]` on render. Leave it empty and the
+formatted Date shows instead.
+
+Finsweet's empty state sits on Webflow's native empty element. The CMS also
+shows that element while the list is binding, so §05 holds it back until
+`data-list-ready`.
+
 ## Press interviews
 
 The native `#interviews` section follows the coverage list on the Press page.

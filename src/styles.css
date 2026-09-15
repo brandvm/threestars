@@ -1160,6 +1160,44 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
   border-color: var(--_colors-semantic---text--primary);
 }
 
+/* Press collection: runtime states for the year filter. The year pills
+   reuse the .credentials-filter class rather than cloning its rules — the
+   two bars are the same control, so the active, hover and focus states
+   above cover both. Layout and sizes live in Webflow. */
+
+/* The Date Label block exists only to carry the CMS value to press-list.ts.
+   It is never shown; the visible date is [data-press-date] in the card. */
+[data-press-date-label] {
+  display: none;
+}
+
+/* Finsweet's empty state is inside Webflow's native empty element, which
+   the CMS also shows while the list is still binding. Hold it back until
+   the list reports ready, or it flashes under a full grid. */
+[data-press-list]:not([data-list-ready]) [fs-list-element="empty"] {
+  display: none;
+}
+
+/* The grid was authored as a four-across scroller, so it carries no
+   narrow-screen columns of its own. */
+@media (max-width: 991px) {
+  .press-list {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .press-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 479px) {
+  .press-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ============================================================
    06. UTILITIES
    ============================================================ */
