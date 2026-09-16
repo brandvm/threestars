@@ -25,7 +25,9 @@ export function initNavigation(lenis?: Lenis): void {
     });
   }
   function updateMenuTop() {
-    if (visible) nav!.style.setProperty('--nav-menu-top', `${nav!.querySelector('.nav-bar')!.getBoundingClientRect().bottom}px`);
+    // Clamped: a header scrolled above the viewport would otherwise start the
+    // menu off-screen and stretch it by the scroll distance.
+    if (visible) nav!.style.setProperty('--nav-menu-top', `${Math.max(0, nav!.querySelector('.nav-bar')!.getBoundingClientRect().bottom)}px`);
   }
   function finishClose() {
     if (opened) return;
