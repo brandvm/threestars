@@ -66,7 +66,9 @@
      reach for --dur-bbs, which is scaled for the long editorial moves. */
   --dur-ui: 400ms;
 
-  /* Layout */
+  /* Layout — fallback only. anchor-scroll.ts overwrites it on <html> with
+     the sticky header's measured height, which varies by breakpoint and
+     with the fluid root size. */
   --nav-h: 6rem;
 
   /* Underline effect */
@@ -1202,9 +1204,17 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
    06. UTILITIES
    ============================================================ */
 
-/* Anchor offset for the fixed header */
+/* Anchor offset for the sticky header. Read by the browser for arrival
+   hashes and by Lenis in anchor-scroll.ts; Webflow's own anchor scroll,
+   which ignores it, is unbound there. */
 :where([id]) {
   scroll-margin-top: var(--nav-h);
+}
+
+/* An in-page jump moves focus to its target so the next Tab continues from
+   there. Sections are not controls, so no ring for that programmatic focus. */
+[data-anchor-target]:focus {
+  outline: none;
 }
 
 /* Opt-in scrollbar hiding — per element, never global */

@@ -90,6 +90,12 @@ the background paints a solid block behind the vector; re-adding the mask
 pulls 570KB during page load, which is the thing the idle fetch exists to
 avoid. Both go back on automatically, inline, only if the fetch fails.
 
+**Webflow's anchor scroll ignores a sticky header.** Its `scroll` module
+offsets same-page hash links only for a `position: fixed` header, and never
+reads `scroll-margin-top`. `anchor-scroll.ts` unbinds it (`click.wf-scroll`)
+and measures `--nav-h` from `.nav-w`. Do not reintroduce a hard-coded nav
+height, and do not add a second hash-link handler.
+
 ## Webflow MCP limits
 
 Worked around, not fixed. Do not rediscover these:
@@ -135,8 +141,6 @@ Both ends of a transition must come from the same family or it snaps.
   element's inherited font size when matching design dimensions
 - `Nav/Height` is 6.5em at Mobile L but 4.8125em at Tablet/Phone — the topbar
   is hidden at all three, so Mobile L looks missed
-- `--nav-h: 6rem` is a third source of truth against `Nav/Height`; it drives
-  `scroll-margin-top` on every `[id]`. Blocked on the unit question above
 - **`VER = "X.Y.Z"` in `loader.html`, and the repo has zero git tags.** Prod
   CSS and JS both 404 the moment a custom domain is attached. Cheapest fix,
   highest consequence

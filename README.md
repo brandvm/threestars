@@ -271,8 +271,31 @@ navigation cards also lead to that section. The Interviews & video submenu
 links to `/press-overview#interviews`.
 
 `navigation.ts` manages dropdowns, mobile menu state, focus, and scroll locking.
-It does not create target IDs, rewrite link URLs, or intercept anchor scrolling.
-Keep section IDs and saved navigation URLs in sync when changing destinations.
+It does not create target IDs or rewrite link URLs. Keep section IDs and saved
+navigation URLs in sync when changing destinations.
+
+`anchor-scroll.ts` owns the scroll to those IDs, because nothing else lands
+them below the sticky header:
+
+- **Webflow's own anchor scroll is unbound.** Its `scroll` module takes every
+  same-page hash link and subtracts the height of `header` only when that
+  header is `position: fixed`. `.nav-w` is a sticky `<header>`, so Webflow
+  scrolled targets flush to the top, under the nav, and never read
+  `scroll-margin-top`. It is bound as `click.wf-scroll`, so exactly that
+  handler is removed. Same-page links now scroll through Lenis, which does
+  subtract `scroll-margin-top`, and move focus to the target as Webflow did.
+- **`--nav-h` is measured, not restated.** The header's height changes by
+  breakpoint (the topbar is hidden below 992px) and with the fluid root size,
+  so a `ResizeObserver` writes its real height in px onto `<html>`. The `6rem`
+  in §01 is only the pre-JS fallback. Every `[id]` uses it as
+  `scroll-margin-top` (§06).
+- **Arrival hashes are re-settled.** Loading `/about#leadership-team` gets no
+  reliable native jump: `html.is-loading` clips html and body to the viewport
+  during boot. Once the lock lifts, and again after `load`, the page settles
+  on the target — unless the reader has already scrolled, tapped or typed.
+
+A section that should sit flush to the viewport top instead, as `#credentials`
+does for the map buttons, overrides `scroll-margin-top` itself.
 
 The mobile menu fades and slides in with staggered links and an animated
 menu/close icon. It uses the existing `--dur-ui` / `--ease-bbs` motion tokens,

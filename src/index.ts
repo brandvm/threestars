@@ -1,3 +1,4 @@
+import { initAnchorScroll } from "./modules/anchor-scroll";
 import { initBioModal } from "./modules/bio-modal";
 import { initClock } from "./modules/clock";
 import { initContactForm } from "./modules/contact-form";
@@ -30,6 +31,10 @@ initLists();
 initParallax(lenis);
 initBioModal(lenis);
 initNavigation(lenis);
+// After navigation, whose link listeners release the mobile menu's scroll
+// lock before an in-page jump. Before the preloader, so an arrival hash
+// waits for the lock to lift rather than finding it already gone.
+initAnchorScroll(lenis);
 
 // The homepage intro owns the lock until its reveal; other pages release now.
 initHomePreloader(lenis);
