@@ -274,6 +274,16 @@ links to `/press-overview#interviews`.
 It does not create target IDs or rewrite link URLs. Keep section IDs and saved
 navigation URLs in sync when changing destinations.
 
+About, Services and Press are split disclosures in `G | Nav W`: the label is
+a real page link (`/about`, `/services-overview`, `/press-overview`) and the
+chevron beside it is the toggle button, named "Show About pages" and so on.
+On desktop, hover still opens the panel and clicking the label navigates;
+touch and keyboard use the chevron. Below 992px each section's links are
+listed open under its label and the chevron is hidden. Before the split,
+the button *was* the label, so none of the three pages had a link without an
+anchor. The mobile rules key on the label link existing, so markup without
+it still toggles.
+
 `anchor-scroll.ts` owns the scroll to those IDs, because nothing else lands
 them below the sticky header:
 

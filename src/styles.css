@@ -739,8 +739,14 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
      the menu measured a negative bar edge, and the links opened off-screen. */
   .nav-w { --nav-menu-duration: 240ms; }
   .nav-w[data-menu-visible] { height: auto; background: transparent; z-index: 1000; }
+  /* The backdrop is sized to the large viewport, not inset: 0. iOS 26
+     Safari's floating toolbar is glass over live page content, and a fixed
+     inset: 0 box stops at the small viewport — above that toolbar — so the
+     page showed through beneath the open menu. 100lvh reaches the screen
+     edge; 100vh is the same size on iOS and the fallback elsewhere. The
+     links keep bottom: 0, so Contact still sits clear of the toolbar. */
   .nav-w::before {
-    content: ""; position: fixed; inset: 0; z-index: -1;
+    content: ""; position: fixed; inset: 0 0 auto; height: 100vh; height: 100lvh; z-index: -1;
     background: var(--_colors---brand--deep-navy);
     opacity: 0; pointer-events: none;
     transition: opacity var(--nav-menu-duration) ease;
@@ -787,6 +793,18 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
   .nav-disclosure[data-open] > .nav-press-panel { display: block; }
   .nav-panel .nav-featured-card { display: none; }
   .nav-submenu-link { text-transform: none; font-size: 1em; padding: .875em; }
+  /* Split disclosures: the label links to its page and the chevron toggles.
+     On a phone there is room to list every page, so each section's links
+     stay open under its label and the toggle goes. Keyed on the label link
+     existing, so markup published before the split still toggles. */
+  .nav-disclosure:has(> a.nav-link) { flex-wrap: wrap; gap: 0; }
+  .nav-disclosure:has(> a.nav-link) > .nav-trigger { display: none; }
+  .nav-disclosure > a.nav-link { padding-bottom: .5em; }
+  .nav-disclosure:has(> a.nav-link) > .nav-panel,
+  .nav-disclosure:has(> a.nav-link) > .nav-panel.nav-press-panel {
+    display: block; flex-basis: 100%; padding: 0 0 1em; animation: none;
+  }
+  .nav-disclosure:has(> a.nav-link) .nav-submenu-link { font-size: .875em; padding: .5em; }
   .nav-w[data-menu-visible] .nav-links > .button-link {
     margin-top: auto; width: 100%; flex: none;
     background: var(--_colors---brand--soft-stone); color: var(--_colors---brand--deep-navy);
