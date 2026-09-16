@@ -1,4 +1,5 @@
-import { init as initList, type ListItem } from "@finsweet/attributes/dist/src-T7SM3ONB.js";
+import type { ListItem } from "@finsweet/attributes/dist/src-T7SM3ONB.js";
+import { startLists } from "./finsweet-list";
 
 // Older coverage is dated more loosely than a date field can express — a
 // quarterly runs as "Autumn 2021", a monthly prints only its month. Those
@@ -43,16 +44,8 @@ export function initPressList(): void {
   form.addEventListener("change", syncControls);
   syncControls();
 
-  // Finsweet's shared option reader checks script-level defaults. An array
-  // preserves the standard callback queue if another Attributes module loads.
-  const host = window as typeof window & {
-    FinsweetAttributes?: { scripts?: HTMLScriptElement[] };
-  };
-  host.FinsweetAttributes ||= [] as unknown as { scripts: HTMLScriptElement[] };
-  host.FinsweetAttributes.scripts ||= [];
-
-  void initList().then(({ result }) => {
-    const list = result.find((instance) => section.contains(instance.wrapperElement));
+  startLists().then((lists) => {
+    const list = lists.find((instance) => section.contains(instance.wrapperElement));
     if (!list) throw new Error("Press list instance was not created");
     list.addHook("afterRender", (items) => {
       applyDateLabels(items);

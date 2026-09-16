@@ -1,4 +1,5 @@
-import { init as initList, type ListItem } from "@finsweet/attributes/dist/src-T7SM3ONB.js";
+import type { ListItem } from "@finsweet/attributes/dist/src-T7SM3ONB.js";
+import { startLists } from "./finsweet-list";
 
 const monthYear = new Intl.DateTimeFormat("en-GB", {
   month: "long", year: "numeric",
@@ -86,16 +87,8 @@ export function initCredentialsList(): void {
   window.addEventListener("resize", schedulePosition);
   positionBar();
 
-  // Finsweet's shared option reader checks script-level defaults. An array
-  // preserves the standard callback queue if another Attributes module loads.
-  const host = window as typeof window & {
-    FinsweetAttributes?: { scripts?: HTMLScriptElement[] };
-  };
-  host.FinsweetAttributes ||= [] as unknown as { scripts: HTMLScriptElement[] };
-  host.FinsweetAttributes.scripts ||= [];
-
-  void initList().then(({ result }) => {
-    const list = result.find((instance) => section.contains(instance.wrapperElement));
+  startLists().then((lists) => {
+    const list = lists.find((instance) => section.contains(instance.wrapperElement));
     if (!list) throw new Error("Credentials list instance was not created");
     list.addHook("afterRender", (items) => {
       formatDates(items);

@@ -6,6 +6,7 @@ import { initInterviews } from "./modules/interviews";
 import { initNavigation } from "./modules/navigation";
 import { initCredentialsMap } from "./modules/credentials-map";
 import { initCredentialsList } from "./modules/credentials-list";
+import { initLists } from "./modules/finsweet-list";
 import { initParallax } from "./modules/parallax";
 import { initPressList } from "./modules/press-list";
 import { initRegionMap } from "./modules/region-map";
@@ -24,6 +25,8 @@ initRegionMap();
 initCredentialsMap(lenis);
 initCredentialsList();
 initPressList();
+// After the page modules, which set attributes List must see at init.
+initLists();
 initParallax(lenis);
 initBioModal(lenis);
 initNavigation(lenis);

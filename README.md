@@ -301,6 +301,24 @@ native CMS condition so empty profiles stay hidden.
 See the [link repair record](audits/link-fixes-2026-09-10.md) for source URLs
 and remaining content work.
 
+## Collection list load more
+
+Any Collection List with native pagination loads further pages in place
+through Finsweet List Load rather than navigating to `?page=2`. In Webflow,
+keep the list's native Pagination (it sets the page size and is what Load
+reads) and put two attributes on the **Collection List** element — not its
+wrapper:
+
+    fs-list-element="list"
+    fs-list-load="more"
+
+Nothing else is required; `finsweet-list.ts` starts List on any page that
+has a marked list. It is also the only place List starts: `init()` wraps
+every marked list it finds, so a second call would wrap them twice.
+`credentials-list.ts` and `press-list.ts` take their instance from the same
+shared `startLists()` promise, and `initLists()` runs after them in
+`index.ts` because they set attributes `init()` has to see.
+
 ## Press coverage list
 
 The `#coverage-and-commentary` section on the Press page is a native Webflow
