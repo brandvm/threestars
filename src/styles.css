@@ -794,7 +794,9 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
   .nav-disclosure { margin: 0; padding: 0; }
   .nav-panel, .nav-panel.nav-press-panel { position: static; width: 100%; min-width: 0; max-width: none; border: 0; padding: .5em; }
   .nav-disclosure[data-open] > .nav-press-panel { display: block; }
-  .nav-panel .nav-featured-card { display: none; }
+  /* The featured coverage cards are a desktop dropdown extra; the open phone
+     and tablet list keeps to links. */
+  .nav-panel .nav-featured-card, .nav-panel .press-list-w { display: none; }
   .nav-submenu-link { text-transform: none; font-size: 1em; padding: .875em; }
   /* On a phone there is room to list every page, so each section's links
      stay open under a plain heading ([data-nav-label]) and the toggle goes.
