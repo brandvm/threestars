@@ -732,10 +732,13 @@ html.bio-lock {
 html.is-nav-open, html.is-nav-open body { overflow: hidden; }
 @keyframes nav-panel-in { from { opacity: 0; transform: translateY(.35em); } to { opacity: 1; transform: translateY(0em); } }
 @media (max-width: 991px) {
-  /* Keep the header in flow so opening does not shift the page underneath.
-     The visible state persists through the exit before JS releases the lock. */
+  /* The visible state persists through the exit before JS releases the lock.
+     Position is deliberately left alone: .nav-w is sticky, which is already
+     in flow. Forcing relative here dropped the stick, so on a scrolled page —
+     any arrival with a #hash — the header jumped back to the document top,
+     the menu measured a negative bar edge, and the links opened off-screen. */
   .nav-w { --nav-menu-duration: 240ms; }
-  .nav-w[data-menu-visible] { position: relative; inset: auto; height: auto; background: transparent; z-index: 1000; }
+  .nav-w[data-menu-visible] { height: auto; background: transparent; z-index: 1000; }
   .nav-w::before {
     content: ""; position: fixed; inset: 0; z-index: -1;
     background: var(--_colors---brand--deep-navy);
