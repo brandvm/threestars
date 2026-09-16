@@ -710,6 +710,9 @@ html.bio-lock {
 /* Navigation disclosure states. Layout classes remain authored in Webflow. */
 .nav-disclosure[data-nav-dropdown="press"] { position: static; }
 .nav-disclosure { padding-block: 1em; margin-block: -1em; }
+/* Section heading for the always-open phone menu; the toggle button carries
+   the label on desktop, where the dropdown opens on demand. */
+[data-nav-label] { display: none; }
 .nav-disclosure[data-open] > .nav-panel { display: block; animation: nav-panel-in 220ms ease both; }
 .nav-disclosure[data-open] > .nav-press-panel { display: grid; }
 .nav-chevron { transition: transform 220ms ease; }
@@ -793,18 +796,17 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
   .nav-disclosure[data-open] > .nav-press-panel { display: block; }
   .nav-panel .nav-featured-card { display: none; }
   .nav-submenu-link { text-transform: none; font-size: 1em; padding: .875em; }
-  /* Split disclosures: the label links to its page and the chevron toggles.
-     On a phone there is room to list every page, so each section's links
-     stay open under its label and the toggle goes. Keyed on the label link
-     existing, so markup published before the split still toggles. */
-  .nav-disclosure:has(> a.nav-link) { flex-wrap: wrap; gap: 0; }
-  .nav-disclosure:has(> a.nav-link) > .nav-trigger { display: none; }
-  .nav-disclosure > a.nav-link { padding-bottom: .5em; }
-  .nav-disclosure:has(> a.nav-link) > .nav-panel,
-  .nav-disclosure:has(> a.nav-link) > .nav-panel.nav-press-panel {
-    display: block; flex-basis: 100%; padding: 0 0 1em; animation: none;
+  /* On a phone there is room to list every page, so each section's links
+     stay open under a plain heading ([data-nav-label]) and the toggle goes.
+     Each list starts with its overview page. Keyed on the heading existing,
+     so markup published without it still toggles. */
+  .nav-disclosure:has(> [data-nav-label]) > .nav-trigger { display: none; }
+  .nav-disclosure > [data-nav-label] { display: flex; padding-bottom: .5em; }
+  .nav-disclosure:has(> [data-nav-label]) > .nav-panel,
+  .nav-disclosure:has(> [data-nav-label]) > .nav-panel.nav-press-panel {
+    display: block; padding: 0 0 1em; animation: none;
   }
-  .nav-disclosure:has(> a.nav-link) .nav-submenu-link { font-size: .875em; padding: .5em; }
+  .nav-disclosure:has(> [data-nav-label]) .nav-submenu-link { font-size: .875em; padding: .5em; }
   .nav-w[data-menu-visible] .nav-links > .button-link {
     margin-top: auto; width: 100%; flex: none;
     background: var(--_colors---brand--soft-stone); color: var(--_colors---brand--deep-navy);
