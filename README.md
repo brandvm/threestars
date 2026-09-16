@@ -382,25 +382,25 @@ shows that element while the list is binding, so §05 holds it back until
 
 ## Press interviews
 
-The native `#interviews` section follows the coverage list on the Press page.
-It matches the supplied Figma reference with four `E | Interview Card`
-instances, the existing Press thumbnail, a two-column desktop grid, and a
-single column below 768px. Section, container, typography and button styles
-reuse the existing Webflow design system.
+The `#interviews` section follows the coverage list on the Press page. It is
+a Collection List over the **Interviews** collection, newest first by Date,
+rendering `E | Interview Card` with every prop bound to a field: Name is the
+title, plus Publisher, Date, Video URL, Thumbnail and Thumbnail Alt. The list
+carries the `Interviews Grid` class, so layout is unchanged.
 
-Edit each card's **Thumbnail**, **Thumbnail Alt**, **Interview Title**,
-**Publisher**, **Date**, and **Video URL** properties in Designer. Keep the
-URL empty until the original interview is confirmed. `interviews.ts` makes
-empty or invalid URLs inactive; a full HTTP(S) URL enables the card and opens
-the original platform in a new tab. The four current cards are explicitly
-marked `[TBC]` and do not link to fabricated videos.
+To add an interview, add a CMS item. Nothing in the Designer changes.
 
-Duplicate card instances inside **Interviews Grid** to add interviews.
-The script shows four at a time, enables **Show More** when additional cards
-exist, and moves keyboard focus to the newly revealed content. With only
-the four placeholders, the reference button remains visible and disabled.
-Only link/disclosure behavior and its accessibility styles live in this repo;
-the section, images, content and responsive layout remain native Webflow.
+Show More is native pagination at four per page with `fs-list-load="more"`
+on the list — see [Collection list load more](#collection-list-load-more).
+Native pagination hides the button when there is no next page, so with four
+or fewer items it does not render.
+
+An unconfirmed interview keeps its Video URL empty. `interviews.ts` leaves
+that card visible but inactive (no `href`, `aria-disabled`, out of the tab
+order); a full HTTP(S) URL makes the card a link that opens the original
+platform in a new tab. It checks the first page on load and each page Load
+More renders after. The four current items are `[TBC]` placeholders and do
+not link to fabricated videos.
 
 ## Legal pages
 

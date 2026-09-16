@@ -829,7 +829,6 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
 
 /* Interview layout belongs to Webflow. These rules pair with interviews.ts
    and extend the existing stretched-link pattern only to confirmed videos. */
-[data-interviews] [hidden] { display: none !important; }
 .interview-link[aria-disabled="true"] { pointer-events: none; cursor: default; }
 .interview-card[data-interview-ready] .interview-link::after {
   content: "";
@@ -843,10 +842,6 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
 .interview-card[data-interview-ready]:hover .interview-title {
   text-decoration: underline;
   text-underline-offset: .2em;
-}
-[data-interviews-more]:disabled {
-  cursor: default;
-  background-color: var(--_colors-semantic---button--primary-background);
 }
 
 /* Bio modal — the dialog markup and every other class it uses live in the

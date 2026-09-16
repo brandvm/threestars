@@ -26,7 +26,6 @@ initRegionMap();
 initCredentialsMap(lenis);
 initCredentialsList();
 initPressList();
-// After the page modules, which set attributes List must see at init.
 initLists();
 initParallax(lenis);
 initBioModal(lenis);
