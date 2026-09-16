@@ -802,11 +802,15 @@ html.is-nav-open, html.is-nav-open body { overflow: hidden; }
      so markup published without it still toggles. */
   .nav-disclosure:has(> [data-nav-label]) > .nav-trigger { display: none; }
   .nav-disclosure > [data-nav-label] { display: flex; padding-bottom: .5em; }
+  /* An open list sits directly on the menu's navy, so the desktop panel's
+     own background and colour go; a small left indent separates it from its
+     heading instead. Indent and row height follow the mobile-menu-open frame. */
   .nav-disclosure:has(> [data-nav-label]) > .nav-panel,
   .nav-disclosure:has(> [data-nav-label]) > .nav-panel.nav-press-panel {
-    display: block; padding: 0 0 1em; animation: none;
+    display: block; padding: 0 0 1em .625em; animation: none;
+    background: transparent; color: inherit;
   }
-  .nav-disclosure:has(> [data-nav-label]) .nav-submenu-link { font-size: .875em; padding: .5em; }
+  .nav-disclosure:has(> [data-nav-label]) .nav-submenu-link { font-size: .875em; padding: .6875em .5em; }
   .nav-w[data-menu-visible] .nav-links > .button-link {
     margin-top: auto; width: 100%; flex: none;
     background: var(--_colors---brand--soft-stone); color: var(--_colors---brand--deep-navy);
