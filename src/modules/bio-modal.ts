@@ -16,6 +16,11 @@ const FOCUSABLE = [
 ].join(',');
 
 export function initBioModal(lenis?: Lenis): void {
+  // Canvas-only preview switch (see styles.css). Never let it reach a visitor.
+  for (const el of document.querySelectorAll('.bio-modal[data-bio-preview]')) {
+    el.removeAttribute('data-bio-preview');
+  }
+
   let openModal: HTMLElement | null = null;
   let opener: HTMLElement | null = null;
   /** The dialog currently moved to body, and where to put it back. */

@@ -1493,3 +1493,22 @@ html.is-nav-open { overflow: hidden; }
   opacity: 1 !important;
   transform: none !important;
 }
+
+/* Bio modal preview. The dialog is display:none until JS opens it, and the
+   canvas never runs JS, so there is no way to see it while designing. Add
+   the custom attribute `data-bio-preview` to the Bio Modal element to show
+   it; remove the attribute to get the page back. The modal sits inside the
+   collection list, so every item's dialog opens at once and the last one
+   lies on top — they share one template, so editing it edits them all.
+
+   Two guards so one left on by mistake never reaches a visitor: published
+   pages carry data-wf-domain on <html> and the canvas does not, and
+   initBioModal strips the attribute on load in any case. */
+html:not([data-wf-domain]) .bio-modal[data-bio-preview] {
+  display: flex !important;
+  opacity: 1 !important;
+}
+
+html:not([data-wf-domain]) .bio-modal[data-bio-preview] .bio-modal-panel {
+  transform: none !important;
+}
