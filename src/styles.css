@@ -902,6 +902,12 @@ html.is-nav-open { overflow: hidden; }
    previous computed style, so with nothing here the browser has no pair to
    interpolate between and simply paints it at opacity 1. */
 .bio-modal {
+  /* Above .nav-w, which the Designer sets to 99999. The dialog is portalled
+     to body, so it competes with the sticky header at the root stacking
+     context, and the Designer's 900 left the header painted over the top
+     of the panel on mobile. On the base class, not .is-open, so it stays
+     on top through the fade out as well. */
+  z-index: 100000;
   opacity: 0;
   transition:
     opacity var(--dur-ui) var(--ease-bbs),

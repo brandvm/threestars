@@ -65,7 +65,7 @@ export function initBioModal(lenis?: Lenis): void {
     // ancestor takes a transform, filter or contain — any of those make it
     // the containing block and the dialog would be pinned inside the card
     // instead of the window. The same ancestors create stacking contexts
-    // that z-index:900 cannot climb out of. Moving it makes the dialog
+    // that its z-index cannot climb out of. Moving it makes the dialog
     // independent of whatever the Designer does to the collection item.
     //
     // Recorded rather than appended-and-forgotten: the trigger finds its
