@@ -23,6 +23,49 @@ repos to improve `brandvm/wf-template`.
 
 ## This project
 
+### 2026-10-07 · CMS month-only dates display a month early
+- Area: designer
+- Scope: template-candidate
+- Symptom: A mandate dated March 2026 rendered "February 2026".
+- Cause: The date was stored as `YYYY-MM-01T00:00Z`. The site timezone is
+  America/Toronto, so Webflow formats it as the last day of the previous
+  month. The three original Mandates items had the same bug.
+- Fix: Store month-only dates as the 15th at 12:00 UTC, which formats as the
+  same month in every timezone. All 40 Mandates items were moved.
+- Status: fixed (CMS data)
+- Found by: claude
+
+### 2026-10-07 · CMS image import fails silently over 4 MB
+- Area: mcp
+- Scope: template-candidate
+- Symptom: Creating a CMS item with `thumbnail.url` succeeded but the
+  thumbnail came back `null`.
+- Cause: The source PNG was 4.36 MB. Webflow's CMS image limit is 4 MB, and
+  the API drops the field rather than erroring. Updates also need `name` and
+  `slug` in `fieldData`, or they fail with "Missing fields".
+- Fix: Crop and convert to WebP locally (the Credentials cards are 624:300,
+  exported at up to 1248px wide), upload with `data_assets_tool` →
+  `create_asset` and a presigned S3 POST, then set `{fileId, url}` on the
+  item. Webflow copies the file into CMS storage. See
+  `audits/wix-credentials-2026-10-07.csv`.
+- Status: worked around
+- Found by: claude
+
+### 2026-10-07 · MCP rejects filters on a collection list inside a component
+- Area: mcp
+- Scope: template-candidate
+- Symptom: `set_settings` → `filters` on a DynamoWrapper inside a component
+  definition fails with "No source connected. Set a source first." Source
+  and limit on the same list save fine and read back correctly.
+- Cause: MCP limitation, likely the component scope losing the source
+  context for filter validation.
+- Fix: use `queryMode: "curated"` plus `curatedItemIds` to pin the item.
+  The homepage `E | Founder Callout` shows Mauro Savoia's People item this
+  way, so his bio modal can sit beside the card. Or set the filter in the
+  Designer.
+- Status: worked around
+- Found by: claude
+
 ### 2026-10-07 · Press year filters did nothing, then emptied the list
 - Area: designer
 - Scope: template-candidate
