@@ -366,12 +366,23 @@ from there.
 
 Year pills filter on the card's **date text**, not a separate year field.
 The date element inside `E | Press Card` carries `fs-list-field="date"`, and
-each pill pairs `fs-list-value="2022"` with `fs-list-operator="contains"`.
+each pill pairs `fs-list-value="2022"` with `fs-list-operator="contain"`.
 This is why a partial date still filters correctly — "Autumn 2021" contains
-2021. **Adding coverage from a new year needs a new pill**; nothing derives
-them. Duplicate a pill, change its label, `fs-list-value`, `data-year-filter`
-and `id`. The "All years" pill is an empty `fs-list-value`, which clears the
-filter rather than matching anything.
+2021. The operator is `contain`, singular: Finsweet v2 silently treats an
+unknown value such as `contains` as `equal`, and no full date equals a bare
+year, so every pill empties the list.
+
+**Adding coverage from a new year needs a new pill**; nothing derives them.
+Duplicate a pill, then change its label text, the radio's `fs-list-value`,
+`data-year-filter` and `id`, and the label's `for` to match that new `id`.
+
+- The label's `for` must name its own radio. Webflow renders a Form Label
+  with `for=""` by default, and an empty `for` detaches the label from the
+  radio nested inside it, so clicking the pill selects nothing.
+- The "All years" pill is an empty `fs-list-value`, which clears the filter
+  rather than matching anything. It needs `fs-list-operator="contain"` like
+  the others. Without it Finsweet treats it as a separate `equal` condition,
+  and the previous year's filter stays applied.
 
 The pills deliberately reuse the `Credentials Filter` class. The two filter
 bars are the same control, so the active, hover and focus rules in §05 cover

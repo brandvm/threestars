@@ -23,6 +23,25 @@ repos to improve `brandvm/wf-template`.
 
 ## This project
 
+### 2026-10-07 · Press year filters did nothing, then emptied the list
+- Area: designer
+- Scope: template-candidate
+- Symptom: Clicking a Press year pill left "All years" selected. Once it
+  could be selected, every year showed zero cards, and "All years" never
+  cleared the filter.
+- Cause: Three markup faults. (1) Webflow renders each Form Label with
+  `for=""`, and an empty `for` detaches the label from its nested radio.
+  The MCP exposes no "For" setting. (2) `fs-list-operator="contains"`
+  isn't a Finsweet v2 value (it's `contain`), and an unknown value falls back
+  to `equal` silently. (3) The All radio had no operator, so it became a
+  separate `equal` condition and never cleared the `contain` one.
+- Fix: in Webflow, each label carries a custom `for` naming its radio's id,
+  and all seven radios carry `fs-list-operator="contain"` (README "Press
+  coverage list"). The custom `for` replaces Webflow's empty one in published
+  output rather than duplicating it.
+- Status: fixed in Designer, published to staging 2026-10-07
+- Found by: claude
+
 <!-- Add new entries here, newest first. -->
 
 ### 2026-09-16 · Locking scroll on body un-sticks the header
