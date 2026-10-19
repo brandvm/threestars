@@ -261,6 +261,11 @@ Worked around, not fixed. Do not rediscover these:
 
 ## Open decisions
 
+- **Client comments, 2026-10-19 round — UNPUBLISHED Webflow changes.** The
+  ticker, Education, Ibiza mandate, press link swap and interview videos are
+  saved in Webflow but not published. Status of every comment, open items
+  and questions for Mauro: `audits/client-comments-2026-10-19.md`. Unpublish
+  the two `[TBC]` interview items when publishing
 - **Layout em sizing.** Keep the user's `em` convention; account for the
   element's inherited font size when matching design dimensions. Layout
   tokens are `em` and render 6.25% short (see GOTCHAS) — UNRESOLVED

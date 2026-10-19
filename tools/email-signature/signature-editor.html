@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three Stars Signature Editor</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #fff; --line: #e5e7eb; --text: #1f2937; --muted: #6b7280;
+    --brand: #0A1F44; --brand-ink: #fff; --soft: #f9fafb; --focus: #1155CC;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 16px 24px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  .top h1 { font-size: 17px; margin: 0; }
+  .top p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .app { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; max-width: 1240px; margin: 0 auto; padding: 20px 24px 48px; }
+  @media (max-width: 860px) { .app { grid-template-columns: 1fr; padding: 16px; } .top { padding: 14px 16px; } }
+
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+  .editor { padding: 16px; align-self: start; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; }
+  @media (max-width: 860px) { .editor { position: static; max-height: none; } }
+  fieldset { border: 0; padding: 0; margin: 0 0 18px; }
+  legend { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; padding: 0; }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+  label > span { display: block; margin-bottom: 3px; }
+  input[type=text], input[type=url], input[type=email], input[type=number], select {
+    width: 100%; padding: 7px 9px; font: inherit; font-size: 13px; color: var(--text); background: #fff; border: 1px solid #d1d5db; border-radius: 6px;
+  }
+  input:focus, select:focus, button:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .colors { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .colors label { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--text); }
+  input[type=color] { width: 32px; height: 26px; padding: 0; border: 1px solid #d1d5db; border-radius: 4px; background: none; flex: none; }
+  .check { display: flex; align-items: center; gap: 8px; color: var(--text); font-size: 13px; }
+  .hint { font-size: 12px; color: var(--muted); margin: -4px 0 10px; }
+
+  button { font: inherit; font-size: 13px; font-weight: 500; padding: 7px 12px; border-radius: 6px; border: 1px solid var(--brand); background: var(--brand); color: var(--brand-ink); cursor: pointer; }
+  button.alt { background: #fff; color: var(--brand); }
+  button.ghost { background: none; border-color: var(--line); color: var(--muted); }
+
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding: 0 12px; }
+  .tabs button { background: none; border: 0; border-bottom: 2px solid transparent; border-radius: 0; color: var(--muted); padding: 11px 10px 9px; font-weight: 600; }
+  .tabs button[aria-selected=true] { color: var(--brand); border-bottom-color: var(--brand); }
+  .tab-body { padding: 16px; }
+
+  .preview-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 16px 0; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+  .seg button { border: 0; border-radius: 0; background: #fff; color: var(--muted); padding: 6px 12px; }
+  .seg button[aria-pressed=true] { background: var(--brand); color: #fff; }
+  .stage { padding: 16px; background: repeating-conic-gradient(#f3f4f6 0% 25%, #fafafa 0% 50%) 0 0 / 16px 16px; border-radius: 0 0 10px 10px; overflow-x: auto; }
+  .frame-wrap { margin: 0 auto; background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; transition: width .2s; max-width: 100%; }
+  iframe { display: block; width: 100%; border: 0; height: 220px; }
+
+  .install { margin-top: 20px; }
+  .install ol { padding-left: 20px; margin: 0 0 4px; }
+  .install li { margin-bottom: 4px; }
+  .install h3 { font-size: 14px; margin: 18px 0 6px; }
+  .install h3:first-child { margin-top: 0; }
+  .install .note { color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+  .install .actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 4px 0 14px; }
+  code { font-size: 12px; background: var(--soft); border: 1px solid var(--line); border-radius: 4px; padding: 1px 4px; word-break: break-all; }
+  pre.plain { font: 13px/1.6 -apple-system, Helvetica, Arial, sans-serif; background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; margin: 0 0 12px; white-space: pre-wrap; }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 13px; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .toast.on { opacity: 1; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>Three Stars: email signature editor</h1>
+    <p>Edit the details on the left, choose a layout, then follow the steps for your mail app. Changes are saved in this browser.</p>
+  </div>
+  <button class="ghost" id="reset" type="button">Reset to original design</button>
+</header>
+
+<main class="app">
+  <!-- EDITOR -->
+  <form class="panel editor" id="form" autocomplete="off" onsubmit="return false">
+    <fieldset>
+      <legend>Person</legend>
+      <label><span>Name</span><input type="text" name="name"></label>
+      <label><span>Title</span><input type="text" name="title"></label>
+    </fieldset>
+    <fieldset>
+      <legend>Contact</legend>
+      <p class="hint">Leave a field empty to hide its row.</p>
+      <label><span>Tel.</span><input type="text" name="tel"></label>
+      <label><span>Cell.</span><input type="text" name="cell"></label>
+      <label><span>Fax.</span><input type="text" name="fax"></label>
+      <label><span>Email</span><input type="email" name="email"></label>
+      <label><span>Website link</span><input type="url" name="website"></label>
+      <label><span>LinkedIn link</span><input type="url" name="linkedin"></label>
+      <p class="hint">LinkedIn shows as an icon in layout A and as a "Connect" row in layout B.</p>
+      <label><span>Address line 1</span><input type="text" name="addr1"></label>
+      <label><span>Address line 2</span><input type="text" name="addr2"></label>
+    </fieldset>
+    <fieldset>
+      <legend>Images</legend>
+      <label><span>Logo image URL (hosted)</span><input type="url" name="logo"></label>
+      <div class="row2">
+        <label><span>Logo width (px)</span><input type="number" name="logoW" min="80" max="320"></label>
+        <label><span>Name size (px)</span><input type="number" name="nameSize" min="16" max="40"></label>
+      </div>
+      <label><span>LinkedIn icon URL (hosted)</span><input type="url" name="liIcon"></label>
+    </fieldset>
+    <fieldset>
+      <legend>Style</legend>
+      <div class="colors">
+        <label><input type="color" name="cName"> Name &amp; text</label>
+        <label><input type="color" name="cLabel"> Labels</label>
+        <label><input type="color" name="cLink"> Links</label>
+        <label><input type="color" name="cLine"> Divider</label>
+      </div>
+      <label style="margin-top:12px"><span>Name font</span>
+        <select name="headFont">
+          <option value="'Playfair Display',Georgia,'Times New Roman',serif">Playfair Display (falls back to Georgia)</option>
+          <option value="Georgia,'Times New Roman',serif">Georgia</option>
+          <option value="Inter,Helvetica,Arial,sans-serif">Inter (falls back to Helvetica)</option>
+          <option value="Helvetica,Arial,sans-serif">Helvetica / Arial</option>
+        </select>
+      </label>
+      <label class="check"><input type="checkbox" name="underline"> Underline links</label>
+    </fieldset>
+  </form>
+
+  <!-- PREVIEW + INSTALL -->
+  <div>
+    <section class="panel">
+      <div class="tabs" role="tablist" aria-label="Layout" id="layoutTabs">
+        <button type="button" role="tab" data-layout="A">A · Logo left</button>
+        <button type="button" role="tab" data-layout="B">B · Header row</button>
+        <button type="button" role="tab" data-layout="C">C · Name first</button>
+      </div>
+      <div class="preview-bar">
+        <div class="seg" role="group" aria-label="Preview width">
+          <button type="button" data-width="640" aria-pressed="true">Desktop</button>
+          <button type="button" data-width="375" aria-pressed="false">Phone</button>
+        </div>
+        <span style="color:var(--muted);font-size:12px" id="charCount"></span>
+      </div>
+      <div class="stage"><div class="frame-wrap" id="frameWrap" style="width:640px"><iframe id="preview" title="Signature preview"></iframe></div></div>
+    </section>
+
+    <section class="panel install">
+      <div class="tabs" role="tablist" aria-label="Mail app" id="appTabs">
+        <button type="button" role="tab" data-app="apple">Apple Mail</button>
+        <button type="button" role="tab" data-app="gmail">Gmail</button>
+        <button type="button" role="tab" data-app="outlook">Outlook</button>
+        <button type="button" role="tab" data-app="phone">Phone apps</button>
+      </div>
+
+      <div class="tab-body" data-panel="apple">
+        <div class="actions"><button type="button" data-copy="html">Copy HTML</button></div>
+        <p style="margin-top:0">Pasting into Apple Mail's signature box loses the layout and the phone stacking, so put the HTML straight into Mail's signature file:</p>
+        <ol>
+          <li>In Mail &rarr; Settings &rarr; Signatures, choose the account, click <b>+</b>, and name it <i>Three Stars</i>. Leave the placeholder text and leave <b>"Always match my default message font"</b> unchecked. Quit Mail.</li>
+          <li>In Finder, press <b>Cmd+Shift+G</b> and go to <code>~/Library/Mobile Documents/com~apple~mail/Data/V2/Signatures/</code> (if that's empty or missing, use <code>~/Library/Mail/V10/MailData/Signatures/</code>).</li>
+          <li>Sort by Date Modified and open the newest <code>.mailsignature</code> file in TextEdit.</li>
+          <li>Keep the header lines at the top (Content-Type, Message-Id, Mime-Version…). Delete everything after the first blank line, paste what <b>Copy HTML</b> gives you, and save.</li>
+          <li>Lock the file: right-click &rarr; Get Info &rarr; tick <b>Locked</b>. (To update it later, untick Locked, paste the new HTML, and lock it again.)</li>
+          <li>Reopen Mail. The settings preview may look plain, but new messages show the real signature. Send yourself a test and open it on a phone.</li>
+        </ol>
+      </div>
+
+      <div class="tab-body" data-panel="gmail" hidden>
+        <div class="actions"><button type="button" data-copy="rich">Copy signature</button></div>
+        <h3>Gmail on the web</h3>
+        <ol>
+          <li>Click <b>Copy signature</b> above.</li>
+          <li>In Gmail: gear &rarr; <b>See all settings</b> &rarr; <b>General</b> &rarr; <b>Signature</b> &rarr; <b>Create new</b>. Name it <i>Three Stars</i>.</li>
+          <li>Click in the signature box and paste (Cmd+V / Ctrl+V).</li>
+          <li>Under <b>Signature defaults</b>, choose <i>Three Stars</i> for new emails and for replies/forwards.</li>
+          <li>Scroll down and click <b>Save Changes</b>. Repeat for each "send from" address.</li>
+        </ol>
+        <p class="note">Gmail removes the phone-stacking rule. On phones the columns still wrap, but less neatly, and in layouts A and C the divider line can stay next to the details. Layout B wraps most cleanly in Gmail.</p>
+        <p class="note">These settings only apply when sending from gmail.com or the Gmail app. Emails sent from Apple Mail or Outlook use that app's signature, even for a Google account.</p>
+      </div>
+
+      <div class="tab-body" data-panel="outlook" hidden>
+        <div class="actions"><button type="button" data-copy="rich">Copy signature</button><button type="button" class="alt" data-copy="outlook">Copy for Outlook (Windows)</button></div>
+        <h3>Outlook for Mac</h3>
+        <ol>
+          <li>Click <b>Copy signature</b>.</li>
+          <li>Outlook &rarr; <b>Settings</b> &rarr; <b>Signatures</b> &rarr; <b>+</b>. Name it <i>Three Stars</i>, select the placeholder text, and paste.</li>
+          <li>Close the editor to save. Under <b>Choose default signature</b>, set it for new messages and replies/forwards.</li>
+        </ol>
+        <h3>New Outlook for Windows and Outlook on the web</h3>
+        <ol>
+          <li>Click <b>Copy signature</b>.</li>
+          <li>Gear (Settings) &rarr; <b>Accounts</b> &rarr; <b>Signatures</b> &rarr; <b>+ New signature</b>. Name it <i>Three Stars</i> and paste.</li>
+          <li>Under <b>Select default signatures</b>, choose it for new messages and replies/forwards. Click <b>Save</b>.</li>
+        </ol>
+        <h3>Classic Outlook for Windows</h3>
+        <ol>
+          <li>File &rarr; <b>Options</b> &rarr; <b>Mail</b> &rarr; <b>Signatures</b> &rarr; <b>New</b>. Name it <i>Three Stars</i>, type any placeholder text, and click <b>OK</b>. Close Outlook.</li>
+          <li>Press <b>Windows+R</b>, type <code>%APPDATA%\Microsoft\Signatures</code>, and press Enter.</li>
+          <li>Right-click <code>Three Stars.htm</code> &rarr; <b>Open with</b> &rarr; <b>Notepad</b>. Select everything and delete it.</li>
+          <li>Click <b>Copy for Outlook (Windows)</b>, paste into Notepad, and save as UTF-8.</li>
+          <li>Reopen Outlook and set it as the default signature. Don't edit it in Outlook's signature editor after this, or Outlook will rewrite the file.</li>
+        </ol>
+        <p class="note">Classic Outlook for Windows stays side by side on every screen and shows the name in Georgia. Some Outlook recipients will see the logo only after clicking "Download pictures".</p>
+      </div>
+
+      <div class="tab-body" data-panel="phone" hidden>
+        <div class="actions"><button type="button" data-copy="text">Copy plain text</button></div>
+        <pre class="plain" id="plainOut"></pre>
+        <h3>Gmail app</h3>
+        <ol>
+          <li>The Gmail app only allows a plain-text signature. Click <b>Copy plain text</b> and get it onto the phone (for example, email it to yourself).</li>
+          <li>Gmail app &rarr; menu &rarr; <b>Settings</b> &rarr; account &rarr; <b>Signature settings</b> (iPhone) or <b>Mobile signature</b> (Android). Turn it on and paste.</li>
+        </ol>
+        <h3>iPhone Mail and Outlook app</h3>
+        <ol>
+          <li>Install the signature on the Mac first (Apple Mail tab) and send yourself a test email.</li>
+          <li>On the iPhone, open that email, press and hold on the signature, and copy it.</li>
+          <li>Settings &rarr; Apps &rarr; Mail &rarr; <b>Signature</b> (or Outlook app &rarr; Settings &rarr; <b>Signature</b>) and paste. On iPhone Mail, if the formatting drops, shake the phone and tap <b>Undo</b> straight after pasting to bring it back.</li>
+        </ol>
+        <p class="note">Phone signature boxes simplify the layout. For the full design, send from the Mac or from Gmail/Outlook on a computer.</p>
+      </div>
+    </section>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  const CDN = 'https://cdn.prod.website-files.com/6a97103d40ea05346a443224/';
+  const DEFAULTS = {
+    layout: 'A',
+    name: 'Mauro Savoia',
+    title: 'Partner',
+    tel: '+39 02 36705 323',
+    cell: '+39 348 8288 273',
+    fax: '+39 02 36705 310',
+    email: 'mauro.savoia@threestarscp.com',
+    website: 'https://www.threestarscp.com/',
+    linkedin: 'https://www.linkedin.com/company/three-stars-capital-partners/',
+    addr1: "Via San Pietro all'Orto, 17",
+    addr2: '20121 Milano',
+    logo: CDN + '6ad6728f4ed743bee3fbab0f_logo-a.png',
+    logoW: 216,
+    liIcon: CDN + '6ad6728ecf4a57a679d91159_linkedin.png',
+    nameSize: 26,
+    cName: '#0A1F44',
+    cLabel: '#767D8D',
+    cLink: '#1155CC',
+    cLine: '#D9D9D9',
+    headFont: "'Playfair Display',Georgia,'Times New Roman',serif",
+    underline: true
+  };
+  const BODY_FONT = 'Inter,Helvetica,Arial,sans-serif';
+  const STORE_KEY = 'ts-signature-editor-v1';
+
+  let state = Object.assign({}, DEFAULTS);
+  try { const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); if (saved) state = Object.assign({}, DEFAULTS, saved); } catch (e) {}
+  let logoRatio = 171 / 762;
+  let previewWidth = 640;
+  let app = 'apple';
+
+  const form = document.getElementById('form');
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+  // ---------- helpers ----------
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/[<]/g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const telHref = v => 'tel:' + v.replace(/[^\d+]/g, '');
+  const displayUrl = u => u.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/$/, '');
+  const mapsHref = () => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([state.addr1, state.addr2].filter(Boolean).join(' '));
+  const mso = {
+    open: v => `<\!--[if mso]><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td valign="${v}"><![endif]-->`,
+    mid: v => `<\!--[if mso]><\/td><td valign="${v}"><![endif]-->`,
+    close: '<\!--[if mso]><\/td><\/tr><\/table><![endif]-->'
+  };
+
+  function link(href, text) {
+    return `<a href="${esc(href)}" style="color:${state.cLink};text-decoration:${state.underline ? 'underline' : 'none'};">${text}<\/a>`;
+  }
+  function plainLink(href, text) {
+    return `<a href="${esc(href)}" style="color:${state.cName};text-decoration:none;">${text}<\/a>`;
+  }
+  function row(label, value, labelW) {
+    return `<tr><td valign="top" style="color:${state.cLabel};padding-right:14px;white-space:nowrap;${labelW ? 'width:' + labelW + 'px;' : ''}">${label}<\/td><td valign="top" style="color:${state.cName};">${value}<\/td><\/tr>`;
+  }
+  function table(rows) {
+    return rows.length ? `<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-size:12px;line-height:1.6;">${rows.join('')}<\/table>` : '';
+  }
+  const R = {
+    tel: () => state.tel && ['Tel.', plainLink(telHref(state.tel), esc(state.tel))],
+    cell: () => state.cell && ['Cell.', plainLink(telHref(state.cell), esc(state.cell))],
+    fax: () => state.fax && ['Fax.', esc(state.fax)],
+    email: () => state.email && ['Email:', link('mailto:' + state.email, esc(state.email))],
+    website: () => state.website && ['Website:', link(state.website, esc(displayUrl(state.website)))],
+    connect: () => state.linkedin && ['Connect:', link(state.linkedin, 'LinkedIn')],
+    address: () => (state.addr1 || state.addr2) && ['Address:', link(mapsHref(), [state.addr1, state.addr2].filter(Boolean).map(esc).join('<br>'))]
+  };
+  const rows = (keys, w) => keys.map(k => R[k]()).filter(Boolean).map(r => row(r[0], r[1], w));
+
+  function logoImg() {
+    const w = Math.round(+state.logoW || 216);
+    const h = Math.round(w * logoRatio);
+    const img = `<img src="${esc(state.logo)}" width="${w}" height="${h}" alt="Three Stars Capital Partners" style="display:block;border:0;width:${w}px;max-width:100%;height:auto;">`;
+    return state.website ? `<a href="${esc(state.website)}" style="text-decoration:none;">${img}<\/a>` : img;
+  }
+  function nameBlock(extra) {
+    return `<div style="font-family:${state.headFont};font-size:${+state.nameSize || 26}px;line-height:1.2;color:${state.cName};">${esc(state.name)}<\/div>` + extra;
+  }
+  function titleLine(withSite, padBottom, cls) {
+    const site = withSite && state.website ? (state.title ? ' | ' : '') + link(state.website, esc(displayUrl(state.website))) : '';
+    if (!state.title && !site) return '';
+    return `<div${cls ? ` class="${cls}"` : ''} style="font-size:13px;line-height:1.5;color:${state.cLabel};padding-bottom:${padBottom}px;">${esc(state.title)}${site}<\/div>`;
+  }
+
+  // ---------- layouts ----------
+  function layoutA(withStyle) {
+    const css = `<style>@media screen and (max-width:480px){.tsa-col{display:block!important;width:auto!important}.tsa-l{padding-right:0!important}.tsa-r{border-left:0!important;padding-left:0!important;padding-top:14px!important}}<\/style>\n`;
+    const li = state.linkedin && state.liIcon
+      ? `<a href="${esc(state.linkedin)}" style="text-decoration:none;display:inline-block;margin-top:14px;"><img src="${esc(state.liIcon)}" width="28" height="28" alt="LinkedIn" style="display:block;border:0;width:28px;height:28px;"><\/a>` : '';
+    return (withStyle ? css : '') +
+      `<div style="font-family:${BODY_FONT};max-width:600px;">${mso.open('top')}<div class="tsa-col tsa-l" style="display:inline-block;vertical-align:top;padding:4px 20px 4px 0;">${logoImg()}${li}<\/div>${mso.mid('top')}<div class="tsa-col tsa-r" style="display:inline-block;vertical-align:top;border-left:1px solid ${state.cLine};padding:0 0 0 20px;">${nameBlock(titleLine(false, 10))}${table(rows(['tel', 'cell', 'fax', 'email', 'website', 'address']))}<\/div>${mso.close}<\/div>`;
+  }
+  function layoutB(withStyle) {
+    const css = `<style>@media screen and (max-width:480px){.tsb-col{display:block!important;width:auto!important}.tsb-l{padding-right:0!important}.tsb-r{padding-left:0!important;padding-top:10px!important}}<\/style>\n`;
+    const head = `<div style="padding-bottom:12px;border-bottom:1px solid ${state.cLine};">${mso.open('middle')}<div class="tsb-col tsb-l" style="display:inline-block;vertical-align:middle;padding-right:20px;">${logoImg()}<\/div>${mso.mid('middle')}<div class="tsb-col tsb-r" style="display:inline-block;vertical-align:middle;">${nameBlock(titleLine(true, 0))}<\/div>${mso.close}<\/div>`;
+    const left = table(rows(['tel', 'cell', 'fax'], 56));
+    const right = table(rows(['email', 'connect', 'address'], 56));
+    let details = '';
+    if (left && right) {
+      details = `<div style="padding-top:12px;">${mso.open('top')}<div class="tsb-col tsb-l" style="display:inline-block;vertical-align:top;padding-right:36px;">${left}<\/div>${mso.mid('top')}<div class="tsb-col tsb-r" style="display:inline-block;vertical-align:top;">${right}<\/div>${mso.close}<\/div>`;
+    } else if (left || right) {
+      details = `<div style="padding-top:12px;">${left || right}<\/div>`;
+    }
+    return (withStyle ? css : '') + `<div style="font-family:${BODY_FONT};max-width:600px;">${head}${details}<\/div>`;
+  }
+  function layoutC(withStyle) {
+    const css = `<style>@media screen and (max-width:480px){.tsc-col{display:block!important;width:auto!important}.tsc-l{padding-right:0!important}.tsc-r{border-left:0!important;padding-left:0!important;padding-top:16px!important}.tsc-gap{padding-bottom:14px!important}}<\/style>\n`;
+    return (withStyle ? css : '') +
+      `<div style="font-family:${BODY_FONT};max-width:600px;">${mso.open('top')}<div class="tsc-col tsc-l" style="display:inline-block;vertical-align:top;padding:4px 20px 4px 0;">${nameBlock(titleLine(true, 28, 'tsc-gap'))}${logoImg()}<\/div>${mso.mid('top')}<div class="tsc-col tsc-r" style="display:inline-block;vertical-align:top;border-left:1px solid ${state.cLine};padding:8px 0 0 20px;">${table(rows(['tel', 'cell', 'fax', 'email', 'website', 'address']))}<\/div>${mso.close}<\/div>`;
+  }
+  const LAYOUTS = { A: layoutA, B: layoutB, C: layoutC };
+  const signature = withStyle => LAYOUTS[state.layout](withStyle);
+
+  function plainText() {
+    const lines = [state.name, [state.title, 'Three Stars Capital Partners'].filter(Boolean).join(' | ')];
+    if (state.tel) lines.push('Tel. ' + state.tel);
+    if (state.cell) lines.push('Cell. ' + state.cell);
+    if (state.fax) lines.push('Fax. ' + state.fax);
+    if (state.email) lines.push(state.email);
+    if (state.website) lines.push(displayUrl(state.website));
+    const addr = [state.addr1, state.addr2].filter(Boolean).join(', ');
+    if (addr) lines.push(addr);
+    return lines.filter(Boolean).join('\n');
+  }
+  function outlookDoc() {
+    return '\x3Chtml>\n\x3Chead>\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n<\/head>\n\x3Cbody>\n' + signature(true) + '\n<\/body>\n<\/html>\n';
+  }
+
+  // ---------- render ----------
+  const frame = document.getElementById('preview');
+  function render() {
+    const html = signature(true);
+    frame.srcdoc = `<!doctype html>\x3Chtml>\x3Chead><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><\/head>\x3Cbody style="margin:20px 16px;background:#fff;">${html}<\/body><\/html>`;
+    $('#plainOut').textContent = plainText();
+    $('#charCount').textContent = html.length.toLocaleString() + ' characters (Gmail limit 10,000)';
+    $$('#layoutTabs [role=tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.layout === state.layout)));
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  frame.addEventListener('load', () => {
+    try {
+      const doc = frame.contentDocument;
+      const fit = () => { frame.style.height = Math.max(160, doc.body.scrollHeight + 40) + 'px'; };
+      fit();
+      new frame.contentWindow.ResizeObserver(fit).observe(doc.body);
+      [...doc.images].forEach(img => img.addEventListener('load', fit));
+    } catch (e) {}
+  });
+
+  function measureLogo() {
+    const img = new Image();
+    img.onload = () => { if (img.naturalWidth) { logoRatio = img.naturalHeight / img.naturalWidth; render(); } };
+    img.src = state.logo;
+  }
+
+  // ---------- form binding ----------
+  function fillForm() {
+    $$('[name]', form).forEach(el => {
+      const v = state[el.name];
+      if (el.type === 'checkbox') el.checked = !!v;
+      else el.value = v == null ? '' : v;
+    });
+  }
+  function onField(e) {
+    const el = e.target; if (!el.name) return;
+    const v = el.type === 'checkbox' ? el.checked : el.value.trim();
+    if (state[el.name] === v) return;
+    state[el.name] = v;
+    if (el.name === 'logo') measureLogo();
+    render();
+  }
+  form.addEventListener('input', onField);
+  form.addEventListener('change', onField);
+
+  $('#reset').addEventListener('click', () => {
+    if (!confirm('Reset every field to the original design?')) return;
+    state = Object.assign({}, DEFAULTS);
+    fillForm(); measureLogo(); render();
+  });
+
+  // ---------- tabs ----------
+  $$('#layoutTabs [role=tab]').forEach(b => b.addEventListener('click', () => { state.layout = b.dataset.layout; render(); }));
+  function showApp(name) {
+    app = name;
+    $$('#appTabs [role=tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.app === name)));
+    $$('[data-panel]').forEach(p => p.hidden = p.dataset.panel !== name);
+  }
+  $$('#appTabs [role=tab]').forEach(b => b.addEventListener('click', () => showApp(b.dataset.app)));
+  $$('.seg [data-width]').forEach(b => b.addEventListener('click', () => {
+    previewWidth = +b.dataset.width;
+    $$('.seg [data-width]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    $('#frameWrap').style.width = previewWidth + 'px';
+    render();
+  }));
+
+  // ---------- copy ----------
+  const toastEl = document.getElementById('toast');
+  function toast(msg) { toastEl.textContent = msg; toastEl.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => toastEl.classList.remove('on'), 1800); }
+
+  function fallbackCopyText(text) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+    ta.remove(); return ok;
+  }
+  async function copyText(text, msg) {
+    try { await navigator.clipboard.writeText(text); toast(msg); }
+    catch (e) { toast(fallbackCopyText(text) ? msg : 'Copy failed'); }
+  }
+  async function copyRich() {
+    const html = signature(false);
+    try {
+      await navigator.clipboard.write([new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([plainText()], { type: 'text/plain' })
+      })]);
+      toast('Signature copied. Paste it into the signature box');
+    } catch (e) {
+      const box = document.createElement('div');
+      box.contentEditable = 'true'; box.innerHTML = html;
+      box.style.cssText = 'position:fixed;left:-9999px;top:0;';
+      document.body.appendChild(box);
+      const range = document.createRange(); range.selectNodeContents(box);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
+      let ok = false; try { ok = document.execCommand('copy'); } catch (err) {}
+      sel.removeAllRanges(); box.remove();
+      toast(ok ? 'Signature copied. Paste it into the signature box' : 'Copy failed');
+    }
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-copy]'); if (!b) return;
+    const kind = b.dataset.copy;
+    if (kind === 'rich') copyRich();
+    else if (kind === 'html') copyText(signature(true), 'HTML copied for Apple Mail');
+    else if (kind === 'outlook') copyText(outlookDoc(), 'HTML copied for Outlook (Windows)');
+    else if (kind === 'text') copyText(plainText(), 'Plain text copied');
+  });
+
+  // ---------- init ----------
+  fillForm();
+  showApp(app);
+  measureLogo();
+  render();
+})();
+</script>
+</body>
+</html>

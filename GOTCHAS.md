@@ -23,6 +23,34 @@ repos to improve `brandvm/wf-template`.
 
 ## This project
 
+### 2026-10-19 · Static.app injects a script before every `</body>`, even in JS strings
+- Area: js
+- Scope: template-candidate
+- Symptom: The signature editor hosted on assets.brandvm.com rendered its
+  own script as text at the bottom of the page, and every form field was
+  empty.
+- Cause: Static.app inserts its form-collection `<script>` before each
+  literal `</body>` in the file. The script had `</body>` inside template
+  strings (iframe `srcdoc`, Outlook export), so the injection split the code.
+- Fix: Inside `<script>`, write tag text as `\x3Cbody>` / `<\/body>`. Not
+  `<\body>`: `\b` is a backspace escape in JS.
+- Status: fixed (tools/email-signature)
+- Found by: claude
+
+### 2026-10-19 · `set_text` fails on a Block that holds bare text
+- Area: mcp
+- Scope: template-candidate
+- Symptom: `data_element_tool > set_text` on a `Block` (div, class
+  `Label Text`) returned "This element doesn't support text".
+- Cause: Only text block, paragraph, heading, button and link types accept
+  `set_text`. A div whose only child is a String doesn't count.
+- Fix: Call `set_text` on the child `String` node's id instead — that works.
+  Also, `query_elements` with a `text` filter only matches String nodes, and
+  `return_parent` on that query returned nothing. Find the wrapper by listing
+  elements with `children_depth: 1` and matching the child id.
+- Status: documented
+- Found by: claude
+
 ### 2026-10-07 · CMS month-only dates display a month early
 - Area: designer
 - Scope: template-candidate
