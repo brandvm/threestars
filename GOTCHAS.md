@@ -23,6 +23,27 @@ repos to improve `brandvm/wf-template`.
 
 ## This project
 
+### 2026-10-26 · Element builder can't make a bare radio, and a failed build still leaves an element
+- Area: mcp
+- Scope: template-candidate
+- Symptom: Building a `FormBlockLabel` with a `FormRadioInput` child produced
+  a label holding a "Form Label" text node and a `FormRadioWrapper` (radio
+  plus `FormInlineLabel`), not the bare radio the existing pills use. The
+  wrapper took the style and attributes meant for the radio. Passing `id` in
+  `set_attributes` failed with "reserved attribute name", but the error left
+  a half-built label on the page anyway.
+- Cause: The builder expands a radio into Webflow's default radio-field
+  scaffold. `id` and the radio group live in element settings (`domId`,
+  `groupName`), not attributes.
+- Fix: Build, then `move_element` the inner `FormRadioInput` into the label,
+  `set_style` it, `set_settings` for `domId`, `groupName`, `value` and
+  `attributes`, and `remove_element` the wrapper and the "Form Label" string.
+  After any builder error, query the parent for leftovers.
+  `query_elements` keeps showing the old `inputName` after `groupName`
+  changes. Trust `get_settings`.
+- Status: documented
+- Found by: claude
+
 ### 2026-10-19 · Static.app injects a script before every `</body>`, even in JS strings
 - Area: js
 - Scope: template-candidate

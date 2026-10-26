@@ -8,9 +8,9 @@ dropped, so every earlier comment still stands.
 Checked against `three-stars.webflow.io` on 2026-10-19 (pages fetched and
 interactive parts clicked through in a browser).
 
-## ⚠️ State at end of day
+## ⚠️ Current state (updated 2026-10-26)
 
-- **Webflow changes from this session are saved but NOT published.** The
+- **Webflow changes from 2026-10-19 and 2026-10-26 are saved but NOT published.** The
   staging site still shows the old versions until someone publishes.
 - Before publishing, unpublish the two `[TBC]` interview items
   (`tbc-interview-3`, `tbc-interview-4`). They were set to draft, but an item
@@ -30,7 +30,27 @@ interactive parts clicked through in a browser).
 | 5c | Swapped article URLs: "Inside the €330m refinancing…" ↔ "The return of Italy's debt play". Verified by opening both PDFs | Press items `italian-icon-refinancing`, `italy-debt-play` |
 | 5d | Interview cards filled: GRI Institute "Hospitality in Europe" (`youtu.be/DrM28g6S5Dw`, 2024-02-27) and Sara Damasceni interview (`youtu.be/_t3Ykqv9fvw`, 2025-10-07). Thumbnails from YouTube uploaded to Webflow assets | Interviews items `gri-hospitality-in-europe`, `sara-damasceni-interview` |
 
+## Done in Webflow on 2026-10-26 (unpublished)
+
+| # | Change | Where |
+|---|---|---|
+| 5e | Added 4 Press items from the PDFs in Mauro's email. **Green Street News**, 14 Jul 2025: "Orion secures €84m green loan for Milan office complex". **Green Street News**, 2 Jun 2025: "Global Hospitality Investment Group steps into Italy with €96m luxury hotel refi" (the Rome EDITION). **React News**, 17 Jan 2024: "Gruppo Statuto signs deal to acquire €205m Paris hotel" (Mandarin Oriental Paris). **React News**, 31 May 2023: "Gruppo Statuto closes on €400m+ refinancing for Milan house of Dior" (Via Montenapoleone 12) | Press items `orion-84m-green-loan-milan-office`, `ghig-96m-rome-edition-refinancing`, `gruppo-statuto-205m-paris-hotel`, `gruppo-statuto-400m-montenapoleone-dior` |
+| 5e | Year filter pills for **2025, 2024, 2023** added between "All years" and 2022, built the same way as the existing pills (label `for`, radio id `press-year-YYYY`, group `press-year`, `fs-list-*` attributes) | Press page, Filter by year |
+
+Notes on 5e:
+- The cards link to the **original articles** on greenstreetnews.com (React
+  News links redirect there). The PDFs are **not** hosted: each is stamped
+  "intended for use by Mauro Savoia… may not be copied or disseminated
+  without written permission", so posting them publicly would breach the
+  publishers' terms. The PDFs were not committed to this repo either.
+- Card images reuse existing mandate photos (ParkWest, Rome EDITION, Landmark
+  Hotel Paris, Fashion High Street Milan).
+- The year pills can only be tested after publishing. Click 2025, 2024 and
+  2023 on staging.
+
 Confirm with Mauro:
+- Whether he's happy with the cards linking to the publisher's site. That
+  site is paywalled for non-subscribers.
 - The second video's YouTube title is just "SAVOIA YOUTUBE", so the card is
   titled "In conversation with Sara Damasceni". He should confirm a title.
 - He wrote "€250m Four Seasons Hotel in Rome **from 2025**", but the
@@ -42,11 +62,6 @@ Confirm with Mauro:
 
 ## Still open from the 19 Oct additions
 
-- **5e — new press articles.** Waiting on the PDFs from his email: €84m green
-  loan for Milan office complex, 2025 Edition Hotel, Gruppo Statuto €205m
-  Paris hotel, Gruppo Statuto €400m+ Dior refinancing. He says "three
-  articles" but attached four. Each needs publication, date, link and an
-  image (Press collection `6a98e370733a6b15e1a965d4`).
 - **4d — six mandates still have no country**, so they only appear under
   "All regions": Iconic Hotel DPO Restructuring (2012), Iconic Hotel
   Mediterranean (2016), Iconic Hotel Loan Restructuring (2018), Senior Loan
@@ -92,7 +107,7 @@ Legend: ✅ done · 🟡 partly · ❌ open · ❓ needs a phone check
 - ✅ 5b Year filters work
 - ✅ 5c Swapped links (2026-10-19, unpublished). Svim San Babila still points at the La Forgiatura article — real URL needed (see AGENTS.md Open decisions)
 - ✅ 5d Two videos (2026-10-19, unpublished); more to come from Mauro
-- ❌ 5e New articles — waiting on the PDFs
+- ✅ 5e Four new articles plus 2023–2025 year pills (2026-10-26, unpublished)
 - ❌ Press intro paragraph is still Lorem ipsum
 
 ### Other requests in the same email thread
