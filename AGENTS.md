@@ -261,11 +261,10 @@ Worked around, not fixed. Do not rediscover these:
 
 ## Open decisions
 
-- **Client comments, 2026-10-19 round.** Everything was published to staging
-  on 2026-10-26, but the new 2025/2024/2023 Press year pills have the wrong
-  radio group name and misfilter. Fix the Group Name in the Designer (steps in
-  `audits/client-comments-2026-10-19.md`). That file also has the status of
-  every comment, open items and questions for Mauro
+- **Client comments, 2026-10-19 round.** Everything is published to staging
+  and checked, including the 2023–2025 Press year pills (fixed 2026-10-26).
+  The status of every comment, open items and questions for Mauro are in
+  `audits/client-comments-2026-10-19.md`
 - **Layout em sizing.** Keep the user's `em` convention; account for the
   element's inherited font size when matching design dimensions. Layout
   tokens are `em` and render 6.25% short (see GOTCHAS) — UNRESOLVED

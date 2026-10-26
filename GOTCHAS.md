@@ -44,7 +44,7 @@ repos to improve `brandvm/wf-template`.
   keeps the builder's `inputName` ("Radio 2"), and the published input uses
   that (`name="radio-2"`). Writing a different value and back made no
   difference. Set Group Name in the Designer's Settings panel.
-- Status: open — the three Press pills need Group Name set in the Designer
+- Status: fixed in Designer 2026-10-26 (radio name set to `press-year` by hand). Next time, duplicate an existing pill in the Designer instead of building one through the MCP
 - Found by: claude
 
 ### 2026-10-19 · Static.app injects a script before every `</body>`, even in JS strings

@@ -14,16 +14,12 @@ interactive parts clicked through in a browser).
   interview items were unpublished first. Checked on staging: ticker,
   Education, "handed down to", Ibiza under Spain, swapped press links, both
   videos, and the four new press cards. All live.
-- **❌ The 2025, 2024 and 2023 year pills are broken on staging.** Their radios
-  published with `name="radio-2"`, `"radio-2"` and `"radio-3"` instead of
-  `press-year`, so they don't deselect the other years. Picking 2024 or 2023
-  leaves several years checked and the list shows the wrong cards. "All
-  years" and 2025 → 2022 order are fine, and 2025 alone filtered correctly.
-  The MCP sets `groupName` (and `get_settings` reads it back), but the input
-  keeps its builder name — see GOTCHAS 2026-10-26.
-  **Fix in the Designer:** Press page → Filter by year → select the radio
-  inside each of the 2025, 2024 and 2023 pills → Settings → Group Name →
-  `press-year`. Then republish and click each year.
+- **✅ 2025, 2024 and 2023 year pills fixed and republished 2026-10-26.** They
+  first published with builder radio names (`radio-2`/`radio-3`) and
+  misfiltered. The radio name was fixed in the Designer (the MCP couldn't set
+  it — see GOTCHAS 2026-10-26). Retested on staging with real clicks: 2025 →
+  the 2 Green Street articles, 2024 → Paris, 2023 → Dior, 2022 → 2022
+  coverage, All years → everything. Only one radio is checked at a time.
 
 ## Done in Webflow on 2026-10-19 (unpublished)
 
@@ -52,8 +48,7 @@ Notes on 5e:
   publishers' terms. The PDFs were not committed to this repo either.
 - Card images reuse existing mandate photos (ParkWest, Rome EDITION, Landmark
   Hotel Paris, Fashion High Street Milan).
-- The year pills can only be tested after publishing. Click 2025, 2024 and
-  2023 on staging.
+- Year pills tested on staging after publishing (see Current state).
 
 Confirm with Mauro:
 - Whether he's happy with the cards linking to the publisher's site. That
