@@ -261,12 +261,11 @@ Worked around, not fixed. Do not rediscover these:
 
 ## Open decisions
 
-- **Client comments, 2026-10-19 round — UNPUBLISHED Webflow changes.** The
-  ticker, Education, Ibiza mandate, press link swap, interview videos, four
-  new press articles and 2023–2025 year pills (added 2026-10-26) are saved in
-  Webflow but not published. Status of every comment, open items
-  and questions for Mauro: `audits/client-comments-2026-10-19.md`. Unpublish
-  the two `[TBC]` interview items when publishing
+- **Client comments, 2026-10-19 round.** Everything was published to staging
+  on 2026-10-26, but the new 2025/2024/2023 Press year pills have the wrong
+  radio group name and misfilter. Fix the Group Name in the Designer (steps in
+  `audits/client-comments-2026-10-19.md`). That file also has the status of
+  every comment, open items and questions for Mauro
 - **Layout em sizing.** Keep the user's `em` convention; account for the
   element's inherited font size when matching design dimensions. Layout
   tokens are `em` and render 6.25% short (see GOTCHAS) — UNRESOLVED

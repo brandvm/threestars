@@ -10,13 +10,20 @@ interactive parts clicked through in a browser).
 
 ## ⚠️ Current state (updated 2026-10-26)
 
-- **Webflow changes from 2026-10-19 and 2026-10-26 are saved but NOT published.** The
-  staging site still shows the old versions until someone publishes.
-- Before publishing, unpublish the two `[TBC]` interview items
-  (`tbc-interview-3`, `tbc-interview-4`). They were set to draft, but an item
-  that is already live may stay live after a site publish.
-  Interviews collection `6aaab4b06b67d11c9e8dbf58`, items
-  `6aaab4c91e2f92273f303c11` and `6aaab4c91e2f92273f303c13`.
+- **Published to three-stars.webflow.io on 2026-10-26.** The two `[TBC]`
+  interview items were unpublished first. Checked on staging: ticker,
+  Education, "handed down to", Ibiza under Spain, swapped press links, both
+  videos, and the four new press cards. All live.
+- **❌ The 2025, 2024 and 2023 year pills are broken on staging.** Their radios
+  published with `name="radio-2"`, `"radio-2"` and `"radio-3"` instead of
+  `press-year`, so they don't deselect the other years. Picking 2024 or 2023
+  leaves several years checked and the list shows the wrong cards. "All
+  years" and 2025 → 2022 order are fine, and 2025 alone filtered correctly.
+  The MCP sets `groupName` (and `get_settings` reads it back), but the input
+  keeps its builder name — see GOTCHAS 2026-10-26.
+  **Fix in the Designer:** Press page → Filter by year → select the radio
+  inside each of the 2025, 2024 and 2023 pills → Settings → Group Name →
+  `press-year`. Then republish and click each year.
 
 ## Done in Webflow on 2026-10-19 (unpublished)
 

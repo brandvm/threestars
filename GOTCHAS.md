@@ -39,9 +39,12 @@ repos to improve `brandvm/wf-template`.
   `set_style` it, `set_settings` for `domId`, `groupName`, `value` and
   `attributes`, and `remove_element` the wrapper and the "Form Label" string.
   After any builder error, query the parent for leftovers.
-  `query_elements` keeps showing the old `inputName` after `groupName`
-  changes. Trust `get_settings`.
-- Status: documented
+  **`groupName` written through the MCP does not reach the published `name`
+  attribute.** `get_settings` reads back the new value, but `query_elements`
+  keeps the builder's `inputName` ("Radio 2"), and the published input uses
+  that (`name="radio-2"`). Writing a different value and back made no
+  difference. Set Group Name in the Designer's Settings panel.
+- Status: open — the three Press pills need Group Name set in the Designer
 - Found by: claude
 
 ### 2026-10-19 · Static.app injects a script before every `</body>`, even in JS strings
