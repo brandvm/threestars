@@ -62,14 +62,18 @@ that is not versioned, reviewable, or rollback-able.
    designing. The icon font lives here for the same reason: in head
    code the canvas would show blank boxes where every icon should be.
 
-   Two site-CSS links, because the canvas can't choose one for itself:
-     bv-css     staging — what the canvas falls back to
-     bv-css-dev the local dev server, second so it wins the cascade
-   In the canvas both are live: run `pnpm dev` and you are styling
-   against your unsaved local edits; with the server down that link
-   just fails and staging shows through. Everywhere else the script
-   below rewrites bv-css (pinned tag on prod, cache-busted staging on
-   webflow.io) and deletes bv-css-dev unless the dev flag is on.
+   The canvas shows the STAGING stylesheet (bv-css). Everywhere else
+   the script below rewrites bv-css (pinned tag on prod, cache-busted
+   staging on webflow.io) and adds the localhost sheet (bv-css-dev)
+   only when the dev flag is on.
+
+   There is deliberately no static localhost <link>. It used to let
+   the canvas show unsaved local CSS, but every public visitor's
+   browser then requested http://localhost:3000 and Chrome asked for
+   local-network access. To see local CSS on the canvas, add this link
+   below bv-css TEMPORARILY, with `pnpm dev` running, and remove it
+   before publishing:
+     <link id="bv-css-dev" rel="stylesheet" href="http://localhost:3000/styles.css" />
 
    Refreshing the canvas: it re-renders when you close the Embed
    editor, and reloads with the Designer tab — the canvas has no
@@ -90,11 +94,6 @@ that is not versioned, reviewable, or rollback-able.
   rel="stylesheet"
   href="https://brandvm.github.io/threestars/styles.css?v=1"
 />
-<link
-  id="bv-css-dev"
-  rel="stylesheet"
-  href="http://localhost:3000/styles.css"
-/>
 <script>
   (function () {
     var VER = "v1.0.0";
@@ -113,14 +112,21 @@ that is not versioned, reviewable, or rollback-able.
     } catch (e) {}
     // Shared config — the footer loader (and the bundle) read this.
     window.BV = { staging: staging, dev: flag, devBase: DEV, stag: STAG };
-    // Runs in the same tick as the links above, so neither the staging
-    // nor the localhost sheet ever applies on prod — both are settled
-    // before first paint.
+    // Runs in the same tick as the link above, so the staging sheet
+    // never applies on prod — it is settled before first paint.
     var base = document.getElementById("bv-css");
-    var dev = document.getElementById("bv-css-dev");
     if (base)
       base.href = staging ? STAG + "styles.css?v=" + Date.now() : PROD_CSS;
-    if (dev && !flag) dev.parentNode.removeChild(dev);
+    // The localhost sheet is created only in dev mode. A static
+    // localhost <link> made every visitor's browser request
+    // localhost:3000 and Chrome ask for local-network access.
+    if (flag && base) {
+      var dev = document.createElement("link");
+      dev.id = "bv-css-dev";
+      dev.rel = "stylesheet";
+      dev.href = DEV + "styles.css";
+      base.parentNode.insertBefore(dev, base.nextSibling);
+    }
   })();
 </script>
 
