@@ -2,6 +2,7 @@ import { initAnchorScroll } from "./modules/anchor-scroll";
 import { initBioModal } from "./modules/bio-modal";
 import { initClock } from "./modules/clock";
 import { initContactForm } from "./modules/contact-form";
+import { initCookieConsent } from "./modules/cookie-consent";
 import { initHomePreloader } from "./modules/home-preloader";
 import { initInterviews } from "./modules/interviews";
 import { initNavigation } from "./modules/navigation";
@@ -13,6 +14,10 @@ import { initPressList } from "./modules/press-list";
 import { initRegionMap } from "./modules/region-map";
 import { initSmoothScroll } from "./modules/smooth-scroll";
 import { initYear } from "./modules/year";
+
+// First, so a later module that throws cannot keep the banner from showing:
+// index.ts runs the modules as one chain (see GOTCHAS).
+initCookieConsent();
 
 // Parallax rides Lenis's scroll callback, so it needs the instance. It is
 // undefined under prefers-reduced-motion, which is also the signal to skip.

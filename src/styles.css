@@ -938,6 +938,31 @@ html.is-nav-open { overflow: hidden; }
   }
 }
 
+/* repo-css: js-state — cookie banner open state (cookie-consent.ts).
+   Same shape as the bio modal: the Designer keeps the banner display:none
+   and the class shows it, so the JS is the one source of truth for whether
+   it is up. The fade uses the same allow-discrete + @starting-style pair;
+   see the bio modal notes above for why all three pieces are needed.
+   Position, size and z-index (99999, under the bio modal) are on the
+   Designer's Cookie Banner class. */
+[data-consent-banner] {
+  opacity: 0;
+  transition:
+    opacity var(--dur-ui) var(--ease-bbs),
+    display var(--dur-ui) var(--ease-bbs) allow-discrete;
+}
+
+[data-consent-banner].is-open {
+  display: flex;
+  opacity: 1;
+}
+
+@starting-style {
+  [data-consent-banner].is-open {
+    opacity: 0;
+  }
+}
+
 /* Prose rhythm. The Designer can style the Rich Text wrapper but never the
    h/p/ul/ol/li inside it — the CMS generates those and there is nothing to
    hang a class on, so their spacing has to come from here.
@@ -1511,4 +1536,14 @@ html:not([data-wf-domain]) .bio-modal[data-bio-preview] {
 
 html:not([data-wf-domain]) .bio-modal[data-bio-preview] .bio-modal-panel {
   transform: none !important;
+}
+
+/* repo-css: canvas-preview — cookie banner preview. Like the bio modal, the
+   banner is display:none until JS opens it. Add the custom attribute
+   `data-consent-preview` to the banner to see it on the canvas; published
+   pages carry data-wf-domain, and initCookieConsent strips the attribute
+   on load in any case. */
+html:not([data-wf-domain]) [data-consent-banner][data-consent-preview] {
+  display: flex !important;
+  opacity: 1 !important;
 }

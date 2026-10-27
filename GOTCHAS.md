@@ -23,6 +23,20 @@ repos to improve `brandvm/wf-template`.
 
 ## This project
 
+### 2026-10-27 · Body S on a link inside Body S text shrinks it
+- Area: designer
+- Scope: template-candidate
+- Symptom: The Cookie Policy link inside the banner rendered at 10.5px
+  next to 13px text.
+- Cause: The Typography Styles variables are `em`, so a text class on an
+  inline child of an element with the same class compounds (0.8125em of
+  0.8125em). `Link Underline` exists only as combos (`Body S`, `Meta`,
+  `Footer Legal Link`), which tempts reusing `Body S + Link Underline`.
+- Fix: links inside a paragraph take `Inline Link Underline` alone (created
+  in Webflow 2026-10-27; styled in §05) and inherit size from the text.
+- Status: fixed (Designer)
+- Found by: claude
+
 ### 2026-10-07 · CMS month-only dates display a month early
 - Area: designer
 - Scope: template-candidate

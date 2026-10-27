@@ -58,9 +58,13 @@ return 403 to bots but load in a browser. `cdn.prod.website-files.com`
 - Error 1034 (Edge IP Restricted) seen once in Safari from Italy at
   15:52 UTC; not reproducible — DNS correct on every resolver, 200 from
   IT/CH/FR/NL/US. Likely a stale local DNS answer. Watch for repeats
-- **No analytics** — no GA4/GTM tag on the site and no Google tag IDs in site
-  settings. Confirm whether the client wants tracking (and a consent banner)
-  [Person]
+- **Analytics and consent banner** — GTM `GTM-K74K5RVX` + GA4
+  `G-5BCSCLNS2T` behind a custom Consent Mode v2 banner (README "Cookie
+  consent and analytics"). On staging since 2026-10-27; production needs
+  release `v1.0.1`, the VER bump and a publish to the custom domains.
+  Configure the GA4 tag in GTM (consent check + `ts_consent_update`
+  trigger) and publish the container [Person]. The Cookie Policy must list
+  `_ga`, `_ga_<id>` and `ts-consent` [Person]
 - **No canonical tags** on live pages
 - **No Open Graph image** on the home page (title and description are set)
 - **Cookie Policy, Terms and Disclaimer are live with draft copy** — their

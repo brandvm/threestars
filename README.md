@@ -441,6 +441,42 @@ Native `Legal Content`, `Legal Copy`, `Legal List`, and `Legal Link` classes
 provide reading width, paragraph spacing, list indentation, and underlines.
 They reuse the existing section containers and `D3` / `D4` heading styles.
 
+## Cookie consent and analytics
+
+Google Tag Manager (`GTM-K74K5RVX`) loads on every page; GA4
+(`G-5BCSCLNS2T`) is a tag inside GTM, not a separate snippet. A custom
+banner drives Google Consent Mode v2, built for GDPR and the Garante's 2021
+cookie guidelines.
+
+Three parts:
+
+- **Head code** (`loader.html`, piece 1) sets every consent type to
+  `denied` before GTM loads, unless the visitor's `ts-consent` cookie says
+  analytics were accepted. It has to run before GTM, which the async
+  bundle cannot.
+- **`G | Components`** holds the banner (`Cookie Banner`, with
+  `data-consent-banner`); **`G | Footer`** holds the `Cookie Settings`
+  button (`data-consent-open`). The banner is `display: none` in the
+  Designer; add the custom attribute `data-consent-preview` to see it on
+  the canvas.
+- **`src/modules/cookie-consent.ts`** shows the banner when there is no
+  saved choice and handles Accept (`data-consent-accept`), Reject and the
+  close X (both `data-consent-reject`; closing counts as rejecting) and
+  Escape. It saves `{v, analytics, t}` in `ts-consent` for six months, sends
+  `gtag('consent', 'update', …)` and pushes
+  `{event: 'ts_consent_update', ts_analytics}` for GTM. Withdrawing consent
+  deletes the `_ga` cookies.
+
+GTM setup: the Google tag requires additional consent `analytics_storage`
+and fires on Initialization – All Pages plus the Custom Event
+`ts_consent_update` where the Data Layer Variable `ts_analytics` equals
+`true`. Without that second trigger the page where someone accepts is not
+counted.
+
+To ask everyone again (a new purpose such as a LinkedIn or Meta pixel),
+bump `VERSION` in `cookie-consent.ts` **and** `c.v === 1` in the head code
+together, and update the Cookie Policy.
+
 ## 404 page
 
 Webflow's native 404 utility page reuses `G | Components`, `G | Nav W`,
