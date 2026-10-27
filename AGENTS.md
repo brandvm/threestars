@@ -23,7 +23,8 @@ transforms retain their native units.
 - Production bundles: `https://cdn.jsdelivr.net/gh/brandvm/threestars@<VER>/dist/`
 - Production domains: `threestarscp.com` and `www.threestarscp.com`,
   live on Webflow since 2026-10-27 (previously the Wix site)
-- Production release: `v1.0.0` (tagged 2026-10-27). `VER = "v1.0.0"` in
+- Production release: `v1.0.1` (tagged 2026-10-27; adds the cookie
+  consent banner). `VER = "v1.0.1"` in
   the config Embed (second HTML Embed in **G | Components**) and in Site
   settings → Footer code; `loader.html` mirrors both. Use the exact tag
   name with the `v` — jsDelivr's bare `1.0.0` alias 404'd at release
