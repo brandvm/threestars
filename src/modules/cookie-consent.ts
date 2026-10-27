@@ -106,13 +106,14 @@ export function initCookieConsent(): void {
   };
 
   const choose = (analytics: boolean): void => {
-    const previous = read();
     write(analytics);
     gtag('consent', 'update', { analytics_storage: analytics ? 'granted' : 'denied' });
     // The GA4 tag's trigger in GTM listens for this, so an accept counts the
     // page it happened on instead of waiting for the next page view.
     window.dataLayer!.push({ event: 'ts_consent_update', ts_analytics: analytics });
-    if (!analytics && previous?.analytics) clearAnalyticsCookies();
+    // Every reject, not only a change of mind: _ga can outlive ts-consent
+    // (a VERSION bump, or a visitor who cleared just that cookie).
+    if (!analytics) clearAnalyticsCookies();
     hide();
   };
 
