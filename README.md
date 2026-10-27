@@ -460,7 +460,8 @@ Three parts:
   Designer; add the custom attribute `data-consent-preview` to see it on
   the canvas.
 - **`src/modules/cookie-consent.ts`** shows the banner when there is no
-  saved choice and handles Accept (`data-consent-accept`), Reject and the
+  saved choice (on Home, only once the intro has finished and
+  `has-home-preloader` has left `<html>`) and handles Accept (`data-consent-accept`), Reject and the
   close X (both `data-consent-reject`; closing counts as rejecting) and
   Escape. It saves `{v, analytics, t}` in `ts-consent` for six months, sends
   `gtag('consent', 'update', …)` and pushes

@@ -116,7 +116,23 @@ export function initCookieConsent(): void {
     hide();
   };
 
-  if (!read()) show(false);
+  // On Home the intro owns the screen first. Wait for has-home-preloader to
+  // leave <html> rather than for an event from home-preloader.ts: the head
+  // bootstrap's own timeout removes the class too, so this still fires when
+  // the bundle's intro never ran.
+  if (!read()) {
+    const root = document.documentElement;
+    if (root.classList.contains('has-home-preloader')) {
+      const observer = new MutationObserver(() => {
+        if (root.classList.contains('has-home-preloader')) return;
+        observer.disconnect();
+        show(false);
+      });
+      observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+    } else {
+      show(false);
+    }
+  }
 
   document.addEventListener('click', (e) => {
     const target = e.target;

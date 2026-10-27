@@ -23,6 +23,23 @@ repos to improve `brandvm/wf-template`.
 
 ## This project
 
+### 2026-10-27 · Cookie banner shipped unclickable by mouse
+- Area: designer
+- Scope: template-candidate
+- Symptom: On production the cookie banner showed but Accept, Reject, the
+  X and the policy link ignored mouse clicks; clicks landed on the page
+  underneath.
+- Cause: `G | Components` is `position: fixed` with `pointer-events: none`
+  so it never blocks the page, and the banner inside it inherited that.
+  Testing missed it because `element.click()` in script fires the handler
+  without hit-testing.
+- Fix: `pointer-events: auto` on the `Cookie Banner` class. Anything
+  interactive placed in `G | Components` needs the same. Test overlays
+  with a real mouse click or `document.elementFromPoint` at the control's
+  centre, never only with `.click()`.
+- Status: fixed (Designer), published to staging 2026-10-27
+- Found by: human
+
 ### 2026-10-27 · Body S on a link inside Body S text shrinks it
 - Area: designer
 - Scope: template-candidate
