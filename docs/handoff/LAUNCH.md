@@ -23,26 +23,30 @@ link crawler and a real browser).
 
 ## Days 1–3 — crawl (2026-10-27)
 
-10 pages crawled, all 200: `/`, `/about`, `/contact`, `/credentials`,
-`/press-overview`, `/services-overview`, `/privacy-policy`,
-`/cookie-policy`, `/terms`, `/disclaimer`. 96 distinct links checked.
+- [x] **Press PDFs fixed (Claude, 2026-10-27).** 8 of the 14 Press items
+  linked to old Wix files (`threestarscp.com/_files/ugd/…`), dead since the
+  domain moved. The first crawl only saw 4 because it skipped Press
+  pagination.
+  - 4 already had byte-identical Webflow copies from the September
+    migration that the CMS never used: Apollo Rome debut, Italian icon
+    refinancing, Italy's debt play, Rome Edition — repointed
+  - 4 recovered from the Wayback Machine, checked page by page against
+    their cards, and uploaded to Used in Figma / Press: RiverRock,
+    Investcorp, Hotel Danieli "building behind the loan", Eden Hotel
+    (Diritto24) — repointed
+  - Only those 8 items were published; no CMS item references Wix any more
+- [x] **Re-crawl after the fix:** 15 page responses (the 10 pages plus
+  Credentials and Press pagination), all 200; 130 distinct links; no
+  broken internal links, no Wix files, no localhost requests
 
-Broken:
+Not broken: `greenstreetnews.com` (4 articles) and `financecommunity.it`
+return 403 to bots but load in a browser. `cdn.prod.website-files.com`
+(403) is a preconnect, not a link.
 
-| Link | On | Cause |
-| --- | --- | --- |
-| `threestarscp.com/_files/ugd/c782c9_41dc…76.pdf` — "Gruppo Statuto closes on €400m+ refinancing for Milan house of Dior" | `/press-overview` | Old Wix file; gone since the domain moved |
-| `…/c782c9_448d…7e.pdf` — "The building behind the loan: Hotel Danieli" | `/press-overview` | same |
-| `…/c782c9_51d5…2b.pdf` — "Apollo provides €105m financing for luxury hotel's Rome debut" | `/press-overview` | same; a Webflow-hosted copy already exists (`audits/link-fixes-2026-09-10.md`) |
-| `…/c782c9_cb75…a3.pdf` — "PEI — Real Estate Capital" | `/press-overview` | same |
-
-All four PDFs are in the Wayback Machine (June 2023 snapshots), so they
-can be recovered, uploaded to Webflow assets and the Press CMS links
-repointed.
-
-Not broken: the four `greenstreetnews.com` articles return 403 to bots but
-load in a browser. `cdn.prod.website-files.com` (403) is a preconnect, not
-a link.
+- [ ] **Svim San Babila Press item has the wrong link** — it points at the
+  La Forgiatura article (`financecommunity.it/credit-suisse-60-milioni-la-forgiatura/`),
+  the same URL as the La Forgiatura item. Needs the correct article URL
+  [Person]
 
 ## Other findings
 
@@ -79,7 +83,7 @@ first, so redirect the no-slash path.
 | `/contacts` | `/contact` |
 | `/2015/06/privacy-policy` | `/privacy-policy` |
 | `/2011/05/ciao-mondo` | `/` |
-| `/_files/ugd/*.pdf` (11 archived) | the matching Webflow asset where one exists |
+| `/_files/ugd/*.pdf` (11 archived) | the matching Webflow asset where one exists — 8 now have one (see Press PDFs above) |
 
 ## Still to do in the first 30 days
 
