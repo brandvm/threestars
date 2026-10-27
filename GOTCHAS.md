@@ -23,6 +23,21 @@ repos to improve `brandvm/wf-template`.
 
 ## This project
 
+### 2026-10-27 · MCP element builder silently drops a link and li text
+- Area: mcp
+- Scope: template-candidate
+- Symptom: The cookie banner's Cookie Policy link published as `href="#"`,
+  and three Cookie Policy list items published empty, although each build
+  call reported success.
+- Cause: `data_element_builder` ignored `set_link` on a new TextLink and
+  `set_text` on a `BY_CUSTOM_TAG` `li`. The same call's `set_text` on a
+  `span` did stick.
+- Fix: set links afterwards with `data_element_tool` → `set_link`; put list
+  text in a `span` inside each `li`. Check the published HTML for hrefs and
+  text after any MCP build, not only the tool's success message.
+- Status: worked around
+- Found by: human
+
 ### 2026-10-27 · Cookie banner shipped unclickable by mouse
 - Area: designer
 - Scope: template-candidate

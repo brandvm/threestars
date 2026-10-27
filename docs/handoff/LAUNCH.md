@@ -64,12 +64,14 @@ return 403 to bots but load in a browser. `cdn.prod.website-files.com`
   `v1.0.2` (banner waits for the homepage intro; banner clickable — see
   GOTCHAS); GTM container v4. Verified on threestarscp.com: nothing
   reaches GA4 before consent, one `page_view` on Accept, withdrawal clears
-  the `_ga` cookies. The Cookie Policy must still list `_ga`, `_ga_<id>`
-  and `ts-consent` [Person]
+  the `_ga` cookies. The Cookie Policy lists `ts-consent`, `_ga` and
+  `_ga_5BCSCLNS2T`, and the banner links to it (both live 2026-10-27)
 - **No canonical tags** on live pages
 - **No Open Graph image** on the home page (title and description are set)
 - **Cookie Policy, Terms and Disclaimer are live with draft copy** — their
-  own meta descriptions say final legal review is pending [Person]
+  own meta descriptions say final legal review is pending. The Cookie
+  Policy's cookie list is real, but it still says "draft" and doesn't cover
+  Google as processor or US data transfers [Person]
 - No production fallback if jsDelivr fails (see `loader.html`)
 
 ## Old URLs (need 301s)

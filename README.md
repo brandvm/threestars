@@ -434,8 +434,12 @@ Webflow headings, paragraphs, lists, and links; edit it in the corresponding
 The privacy page preserves the supplied seven-page Italian Privacy Policy,
 including its 4 May 2020 publication line and cookie information. The other
 three sections contain visibly marked draft placeholders pending approved
-content. The draft cookie inventory is incomplete; the session-storage
-description reflects the homepage preloader documented above.
+content. The Cookie Policy's "Technologies used on this website" section
+lists the live cookies (`ts-consent`, `_ga`, `_ga_5BCSCLNS2T`) in a
+`Legal List`, plus the `ts-home-intro-seen` session-storage entry used by the
+homepage preloader; update it whenever the cookie banner or GTM adds a
+cookie. The list items hold their text in a `span`: text set directly on a
+DOM `li` through the MCP does not survive publishing.
 
 Native `Legal Content`, `Legal Copy`, `Legal List`, and `Legal Link` classes
 provide reading width, paragraph spacing, list indentation, and underlines.
