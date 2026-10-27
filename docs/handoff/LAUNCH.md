@@ -60,8 +60,9 @@ return 403 to bots but load in a browser. `cdn.prod.website-files.com`
   IT/CH/FR/NL/US. Likely a stale local DNS answer. Watch for repeats
 - **Analytics and consent banner** — GTM `GTM-K74K5RVX` + GA4
   `G-5BCSCLNS2T` behind a custom Consent Mode v2 banner (README "Cookie
-  consent and analytics"). Live in production with `v1.0.1` since
-  2026-10-27; GTM container v4. Verified on threestarscp.com: nothing
+  consent and analytics"). Live in production since 2026-10-27, now
+  `v1.0.2` (banner waits for the homepage intro; banner clickable — see
+  GOTCHAS); GTM container v4. Verified on threestarscp.com: nothing
   reaches GA4 before consent, one `page_view` on Accept, withdrawal clears
   the `_ga` cookies. The Cookie Policy must still list `_ga`, `_ga_<id>`
   and `ts-consent` [Person]

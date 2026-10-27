@@ -37,7 +37,7 @@ repos to improve `brandvm/wf-template`.
   interactive placed in `G | Components` needs the same. Test overlays
   with a real mouse click or `document.elementFromPoint` at the control's
   centre, never only with `.click()`.
-- Status: fixed (Designer), published to staging 2026-10-27
+- Status: fixed (Designer), in production with v1.0.2 2026-10-27
 - Found by: human
 
 ### 2026-10-27 · Body S on a link inside Body S text shrinks it
