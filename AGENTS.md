@@ -21,11 +21,12 @@ transforms retain their native units.
 - Staging site: `https://three-stars.webflow.io`
 - Staging bundles: `https://brandvm.github.io/threestars/`
 - Production bundles: `https://cdn.jsdelivr.net/gh/brandvm/threestars@<VER>/dist/`
-- Production domain: not attached yet (the old Wix site is
-  `www.threestarscp.com`; no custom domain was published as of the
-  2026-09-10 link audit)
-- Production release: none yet — the repo has zero git tags and
-  `loader.html` still carries `VER = "X.Y.Z"` (see Open decisions)
+- Production domains: `threestarscp.com` and `www.threestarscp.com`,
+  live on Webflow since 2026-10-27 (previously the Wix site)
+- Production release: `v1.0.0` (tagged 2026-10-27). `VER = "v1.0.0"` in
+  the config Embed (second HTML Embed in **G | Components**) and in Site
+  settings → Footer code; `loader.html` mirrors both. Use the exact tag
+  name with the `v` — jsDelivr's bare `1.0.0` alias 404'd at release
 
 ## Who owns what
 
@@ -266,9 +267,6 @@ Worked around, not fixed. Do not rediscover these:
   tokens are `em` and render 6.25% short (see GOTCHAS) — UNRESOLVED
 - `Nav/Height` is 6.5em at Mobile L but 4.8125em at Tablet/Phone — the topbar
   is hidden at all three, so Mobile L looks missed
-- **`VER = "X.Y.Z"` in `loader.html`, and the repo has zero git tags.** Prod
-  CSS and JS both 404 the moment a custom domain is attached. Cheapest fix,
-  highest consequence
 - **Press CMS: images and link durability.** The duplicate `(archive)` items
   are gone and all ten items carry real article URLs, but two things are
   open. Six of the ten use `press-card-generic.webp` — Investcorp, Hotel
