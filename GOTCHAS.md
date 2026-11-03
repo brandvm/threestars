@@ -35,7 +35,7 @@ repos to improve `brandvm/wf-template`.
 - Fix: set links afterwards with `data_element_tool` → `set_link`; put list
   text in a `span` inside each `li`. Check the published HTML for hrefs and
   text after any MCP build, not only the tool's success message.
-- Status: worked around
+- Status: harvested into wf-template 0.9.0; worked around
 - Found by: human
 
 ### 2026-10-27 · Cookie banner shipped unclickable by mouse
@@ -52,7 +52,7 @@ repos to improve `brandvm/wf-template`.
   interactive placed in `G | Components` needs the same. Test overlays
   with a real mouse click or `document.elementFromPoint` at the control's
   centre, never only with `.click()`.
-- Status: fixed (Designer), in production with v1.0.2 2026-10-27
+- Status: harvested into wf-template 0.9.0; fixed (Designer), in production with v1.0.2 2026-10-27
 - Found by: human
 
 ### 2026-10-27 · Body S on a link inside Body S text shrinks it
@@ -66,7 +66,7 @@ repos to improve `brandvm/wf-template`.
   `Footer Legal Link`), which tempts reusing `Body S + Link Underline`.
 - Fix: links inside a paragraph take `Inline Link Underline` alone (created
   in Webflow 2026-10-27; styled in §05) and inherit size from the text.
-- Status: fixed (Designer)
+- Status: harvested into wf-template 0.9.0; fixed (Designer)
 - Found by: claude
 
 ### 2026-10-07 · CMS month-only dates display a month early
